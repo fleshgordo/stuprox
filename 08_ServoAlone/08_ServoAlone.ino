@@ -6,13 +6,13 @@
  *  Wiring: 
  *  Power supply +5v -> Servo + pin (red cable)
  *  Power supply GND -> CNC Shield GND pin
- *  Servo Data pin (orange or yellow) -> SDA on CNC shield (pin A5 on arduino)
+ *  Servo Data pin (orange or yellow) -> SDC on CNC shield (pin A5 on arduino)
  *  Servo GND -> GND on CNC Shield
  */
  
 Servo servo;
 
-const byte servoPin = A5; // this is connected to SDA pin on CNC shield
+const byte servoPin = A5; // this is connected to SDC pin on CNC shield
 int pos = 0;
 
 void setup()
