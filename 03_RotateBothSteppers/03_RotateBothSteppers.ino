@@ -12,7 +12,13 @@
 #include "BasicStepperDriver.h"
 #include "MultiDriver.h"
 #include "SyncDriver.h"
+#include <Servo.h>
 
+#include <timer.h>
+
+auto timer = timer_create_default();
+
+Servo myServo;
 // Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
 #define MOTOR_STEPS 200
 #define RPM 100
@@ -50,6 +56,7 @@ unsigned long start_time;
 unsigned long current_time;
 
 void setup() {
+  myServo.attach(9);
   stepperL.begin(RPM, MICROSTEPS);
   stepperR.begin(RPM, MICROSTEPS);
   // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
@@ -68,16 +75,25 @@ void setup() {
 float step_L = 0.125;
 float inc_step_L = 0.05;
 
+bool switchServoOff(void *msg) {
+  const char *m = (const char *)msg;
+  myServo.write(90);
+  Serial.print("print_message: ");
+  Serial.println(m);
+  return true; // repeat? true
+}
+
 void button_press() {
   current_time = millis();
   if (one_shot == false) {
-    Serial.println("Postplotter shutting down ... ");
-    myServo.write(90);
+    Serial.println("Starting servo ... ");
+    myServo.write(95);
+    timer.in(1000, switchServoOff, (void *)"switch servo off");
     start_time = millis();
   }
   one_shot = true;
   if (current_time - start_time > 2000) {
- 
+
     Serial.println("triggered more than a second ago ...");
     one_shot = false;
   }
@@ -86,6 +102,7 @@ void button_press() {
 void loop() {
   //stepperR.enable();
   //stepperL.enable();
+  timer.tick(); // tick the timer
 
 
   controller.move(full_rotation_L * -step_L, full_rotation_R * -0.5);
