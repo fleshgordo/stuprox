@@ -6,7 +6,7 @@
 \___ \ | | | | | | |_) | |_) | | | |  \  /
  ___) || | | |_| |  __/|  _ <| |_| |  /  \
 |____/ |_|  \___/|_|   |_| \_\\___/  /_/\_\                  
-                                                            by Tom Pawlofsky & Gordan Savicic
+                                            by Tom Pawlofsky & Gordan Savicic
 ```
 
 Starter files for Studio Prototyping Extended. Examples are based on the [BasicStepper Library](https://github.com/laurb9/StepperDriver) and adapted to our module.
