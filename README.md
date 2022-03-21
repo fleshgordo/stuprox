@@ -1,2 +1,5 @@
-# stuprox21
-Example files for Studio Prototyping Extended 2021
+# Studio Prototyping Extended
+
+Starter files for Studio Prototyping Extended
+
+ - 01_Basic: description etc.
