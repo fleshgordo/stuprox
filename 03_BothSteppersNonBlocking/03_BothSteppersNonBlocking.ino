@@ -10,8 +10,6 @@
 */
 #include <Arduino.h>
 #include "BasicStepperDriver.h"
-#include "MultiDriver.h"
-#include "SyncDriver.h"
 
 // Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
 #define MOTOR_STEPS 200
@@ -38,9 +36,6 @@
 BasicStepperDriver stepperL(MOTOR_STEPS, DIR_L, STEP_L, SLEEP);
 BasicStepperDriver stepperR(MOTOR_STEPS, DIR_R, STEP_R, SLEEP);
 
-MultiDriver controller(stepperL, stepperR);
-//SyncDriver controller(stepperL, stepperR);
-
 const float full_rotation_R = MOTOR_STEPS * MICROSTEPS * 2.5;
 const float full_rotation_L = MOTOR_STEPS * MICROSTEPS * 7;
 const int step_size_L = 140;
@@ -48,7 +43,7 @@ const int step_size_L = 140;
 void setup()
 {
   stepperL.begin(RPM, MICROSTEPS);
-  stepperR.begin(RPM, MICROSTEPS);
+  stepperR.begin(30, MICROSTEPS);
   // this is needed for enabling/disabling steppers 
   stepperL.setEnableActiveState(LOW);
   stepperR.setEnableActiveState(LOW);
@@ -67,7 +62,15 @@ void setup()
 
   for (int i = 0; i < full_rotation_L; i += step_size_L)
   {
-    controller.move(step_size_L, full_rotation_R);
+    stepperL.startMove(step_size_L);
+    stepperR.startMove(full_rotation_R);
+
+    unsigned wait_time_microsL = 1;
+    unsigned wait_time_microsR = 1;
+    while (wait_time_microsL > 0 || wait_time_microsR > 0 ) {
+      wait_time_microsL = stepperL.nextAction();
+      wait_time_microsR = stepperR.nextAction();
+    }
     delay(20);
   }
 
