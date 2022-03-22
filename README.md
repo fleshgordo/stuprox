@@ -9,7 +9,7 @@
                                             by Tom Pawlofsky & Gordan Savicic
 ```
 
-Starter files for Studio Prototyping Extended. Examples are based on the [BasicStepper Library](https://github.com/laurb9/StepperDriver) and adapted to our module.
+Starter files for Studio Prototyping Extended. Examples are based on the [BasicStepper Library](https://github.com/laurb9/StepperDriver) and adapted to our course module in Bachelor Digital Ideation HSLU Lucerne.
 
 Short description for examples:
 
