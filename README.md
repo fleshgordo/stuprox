@@ -28,6 +28,6 @@ Short description for examples:
     
 
 # Requirements
-  - Arduino Uno
+  - Arduino Uno + [Arduino IDE](https://www.arduino.cc/en/software/)
   - CNC shield, DRV8255 driver chips
   - [Stepperdriver Library](https://github.com/laurb9/StepperDriver) installed
