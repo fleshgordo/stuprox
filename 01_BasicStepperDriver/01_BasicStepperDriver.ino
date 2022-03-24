@@ -16,7 +16,7 @@
 
 // Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
 #define MOTOR_STEPS 200
-#define RPM 120
+#define RPM 60
 
 // Since microstepping is set externally, make sure this matches the selected mode
 // Set the jumper to middle position when using MICROSTEPS 4, no jumper = MICROSTEPS 1
