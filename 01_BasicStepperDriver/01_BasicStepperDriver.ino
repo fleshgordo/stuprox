@@ -54,15 +54,15 @@ void loop()
 
   // energize coils
   stepperR.enable();
-
-  // Test other motor
   stepperL.enable();
+  
   // Moving motor one full revolution using the degree notation
-  //stepperL.rotate(360);
-  //stepperR.rotate(360);
+  stepperL.rotate(360);
+  stepperR.rotate(-360);
 
-  stepperL.move(-MOTOR_STEPS*MICROSTEPS*7); // 200*7 = 1400 steps to rotate the entire disk
-  stepperR.move(-MOTOR_STEPS * MICROSTEPS * 2.5); // 200*7 = 1400 steps to rotate the entire disk
+  //stepperL.move(-MOTOR_STEPS*MICROSTEPS*7); // 200*7 = 1400 steps to rotate the entire disk
+  //stepperR.move(-MOTOR_STEPS * MICROSTEPS * 2.5); // 200*7 = 1400 steps to rotate the entire disk
+  
   // pause and allow the motor to be moved by hand
   stepperL.disable();
   stepperR.disable();
