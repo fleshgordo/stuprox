@@ -11,7 +11,16 @@
 
 Starter files for Studio Prototyping Extended. Examples are based on the [BasicStepper Library](https://github.com/laurb9/StepperDriver) and adapted to our course module in Bachelor Digital Ideation HSLU Lucerne.
 
-Short description for examples:
+## Intro 
+
+   - [Video Tutorials - Tube Switch Channel](https://tube.switch.ch/channels/Dcqw1ga3NL)
+ 
+## Software requirements
+ 
+   - [Arduino IDE ](https://www.arduino.cc/en/software)
+   - [Library Stepperdriver for A4988](https://github.com/laurb9/StepperDriver)
+
+## Examples
 
  - #### 01_BasicStepperDriver.ino
     Test two stepper motors attached to your shield. Make sure you have this running before continuing further
@@ -27,7 +36,10 @@ Short description for examples:
     Simple Serial communication protocol to send settings and positions to Arduino
     
 
-# Requirements
-  - Arduino Uno + [Arduino IDE](https://www.arduino.cc/en/software/)
+# Hardware Requirements
+  - Arduino UNO
   - CNC shield, DRV8255 driver chips
-  - [Stepperdriver Library](https://github.com/laurb9/StepperDriver) installed
+
+## Links
+   - Pololu Infos for [driver A4988](https://www.pololu.com/product/1182) 
+   - [Datasheet A4498 (PDF)](https://www.tme.eu/Document/25459777e672c305e474897eef284f74/POLOLU-2128.pdf)
