@@ -52,13 +52,11 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
 - #### 07_GRBL
     Custom firmware for the Arduino that turns it into a Gcode motion control for CNC machines. You can upload and control the machine through a Desktop controller such as [cncjs](https://cnc.js.org/)
 - #### 08_Servobot.ino
-    Using two servo arms to create a mini-rapid-prototyped-drawmatic-postographo-plotter. It communicates with the computer through 
-   
-    
+    Using two servo arms to create a mini-rapid-prototyped-drawmatic-postographo-plotter. It communicates with the computer through serial communication, directly interfacing with a p5js sketch that uses inverse kinematics to calculate angles.
 
 # Hardware Requirements
   - Arduino UNO
-  - CNC shield, DRV8255 driver chips
+  - CNC shield, A4988 driver chips
 
 ## Links
    - Pololu Infos for [driver A4988](https://www.pololu.com/product/1182) 

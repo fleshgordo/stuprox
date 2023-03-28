@@ -11,7 +11,7 @@
 
 ## Vector Drawing to gcode
 
-[Inkscape](https://inkscape.org/) (an open-source alternative to Adobe Illustrator) has a built-in plugin called pathtogcode which is basically a python script that converts your vector drawing in machine code that you can later use with cncjs and grbl.
+[Inkscape](https://inkscape.org/) (an open-source alternative to Adobe Illustrator) has a built-in plugin called Gcodetools which is basically a python script that converts your vector drawing in machine code that you can later use with cncjs and grbl.
 
 Instruction on how to use it are [here](https://all3dp.com/2/inkscape-g-code-all-you-need-to-know-to-get-started/)
 
@@ -21,7 +21,7 @@ The generated gcode file can't be read with cncjs because of the % sign characte
 sed -i '' '/%/d' output.gcode
 ```
 
-In Inkscape convert objects to paths, then open the pathtogcode extension as described below
+In Inkscape convert objects to paths, then open the Gcodetools extension as described below. Click Apply when in tab "Path to Gcode". 
 
 ![](images/inkscape1.png)
 

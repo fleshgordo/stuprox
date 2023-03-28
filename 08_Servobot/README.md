@@ -2,7 +2,7 @@
 
 ![](images/ServoBotImage.jpg)
 
-Simple bot with two arms that uses inverse kinematics to calculate angle for a cartisian grid system. Coordinates are sent via serial port. You'll need to run [p5serialport](https://github.com/p5-serial/p5.serialcontrol/releases) and connect the right port for the Arduino.
+Simple bot with two arms that uses inverse kinematics to calculate angle for a cartisian grid system. Coordinates are sent via serial port. You'll need to run [p5serialport](https://github.com/p5-serial/p5.serialcontrol/releases) and connect the right port for the Arduino. Read more about the mechanics behind this on [Five-bar-linkage](https://en.wikipedia.org/wiki/Five-bar_linkage).
 
 ## Software 
 
@@ -16,7 +16,7 @@ p5js sketch.js uses several custom classes to calculate position/angle of the ro
 
 * Arduino Board
 * 2 x Servo Motors
-* Bastelhölzer
+* Bastelhölzer, Musterbeutelklammern ()
 * Hook-up wires
 
 ## Quickstart
@@ -30,7 +30,7 @@ p5js sketch.js uses several custom classes to calculate position/angle of the ro
   - Open inspector, check error log
   - Remix mix and add more drawing shapes to shapes.js
   
-![](images/p5serialcontrol.pngs)
+![](images/p5serialcontrol.png)
 
 ## Circuit
 
