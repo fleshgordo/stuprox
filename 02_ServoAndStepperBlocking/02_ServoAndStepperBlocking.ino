@@ -62,7 +62,7 @@ const int servo_min_pos = 55;
 const int servo_max_pos = 135;
 
 // Initialize the driver(s)
-BasicStepperDriver stepper(MOTOR_STEPS, DIR_Z, STEP_Z, SLEEP);
+BasicStepperDriver stepper(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
 
 void setup() {
 
@@ -105,7 +105,5 @@ void loop() {
   // pause and allow the motor to be moved by hand
   stepper.disable();
 
-  delay(500);  // repeat after 2sec. pause
-
-  //Serial.println(pos);
+  delay(100);  // repeat after 100ms
 }

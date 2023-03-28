@@ -40,7 +40,7 @@
 #define DIR_Y 6
 #define STEP_Y 3
 
-// Driver in CNC shield Z
+// Driver in CNC shield Y
 #define DIR_Z 7
 #define STEP_Z 4
 
@@ -87,29 +87,41 @@ void setup() {
   // attach the servo
   servo.attach(servoPin);
   // energize coils
-  stepper.enable();
+
 
   servo.write(pos);
+
+  Serial.println(pos);
+
+
+  Serial.println("Drawing finished. ");
 }
 
-int final_pos = MOTOR_STEPS * MICROSTEPS * 7; // motor steps to make the platform rotate one time
+int final_pos = MOTOR_STEPS * MICROSTEPS * 5;
 bool toggle_pen = false;
 
 void loop() {
+  while (final_pos > 100) {
+    stepper.enable();
+    stepper.startMove(final_pos);
 
-  stepper.enable();
-  stepper.startMove(final_pos);
-
-  unsigned wait_time_micros = 1;
-  while (wait_time_micros > 0) {
-    wait_time_micros = stepper.nextAction();
-    int remaining = stepper.getStepsRemaining();
-    int new_pos = 0;
-    // this is mapping the remaining steps to a range where the servo arm operates
-    new_pos = servo_max_pos - ((float(servo_range) / final_pos) * remaining);
-    servo.write(new_pos);
-    //Serial.println(new_pos);
+    final_pos -= 100;
+    unsigned wait_time_micros = 1;
+    while (wait_time_micros > 0) {
+      wait_time_micros = stepper.nextAction();
+      int remaining = stepper.getStepsRemaining();
+      //int new_pos = servo_max_pos - (servo_max_pos / (MOTOR_STEPS * MICROSTEPS) * remaining);
+      int new_pos = 0;
+      if (toggle_pen) {
+        new_pos = servo_max_pos - ((float(servo_range) / final_pos) * remaining);
+      } else {
+         new_pos = servo_min_pos - ((float(servo_range) / final_pos) * -1 *remaining) ;
+      }
+      servo.write(new_pos);
+      //Serial.println(new_pos);
+    }
+    delay(500);
+    toggle_pen = !toggle_pen;
+    stepper.disable();
   }
-  delay(500);
-  stepper.disable();
 }

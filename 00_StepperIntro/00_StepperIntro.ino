@@ -2,7 +2,7 @@
    Simple demo with DRV8255 driver on CNC shield
 
    Connect STEP, DIR as indicated!
-   Driverslots X and Y on the CNC shield are used
+   Driverslots X, Y, Z on the CNC shield can be used
 
    Adapted 2021/2022 by Gordan Savicic
    based on Copyright (C)2015-2017 Laurentiu Badea
@@ -39,30 +39,30 @@
 #define SLEEP 8
 
 // Initialize the driver(s)
-BasicStepperDriver stepperZ(MOTOR_STEPS, DIR_Z, STEP_Z, SLEEP);
+BasicStepperDriver stepper(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
 
 void setup()
 {
   // Pass some config to the instances and begin
-  stepperZ.begin(RPM, MICROSTEPS);
+  stepper.begin(RPM, MICROSTEPS);
 
   // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
-  stepperZ.setEnableActiveState(LOW);
+  stepper.setEnableActiveState(LOW);
 }
 
 void loop()
 {
   // energize coils
-  stepperZ.enable();
+  stepper.enable();
 
   // Moving motor one full revolution using the degree notation
-  stepperZ.rotate(360);
+  stepper.rotate(360);
 
   //stepperL.move(-MOTOR_STEPS*MICROSTEPS*7); // 200*7 = 1400 steps to rotate the entire disk
   //stepperR.move(-MOTOR_STEPS * MICROSTEPS * 2.5); // 200*7 = 1400 steps to rotate the entire disk
   
   // pause and allow the motor to be moved by hand
-  stepperZ.disable();
+  stepper.disable();
 
   delay(2000); // repeat after 2sec. pause
   

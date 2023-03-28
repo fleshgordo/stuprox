@@ -18,9 +18,13 @@ float pos = 0;
 const int servo_min_ms = 800;
 const int servo_max_ms = 2100;
 
-const int servo_min_pos = 0; // 55
-const int servo_max_pos = 180; // 135
-const int servo_center = 90;
+const int servo_min_pos = 55;
+const int servo_max_pos = 135;
+const int servo_center = 95;
+const int range = servo_max_pos - servo_min_pos;
+
+float angle = 0.0;
+float speed = 0.001;
 
 void setup() {
   Serial.begin(115200);
@@ -32,21 +36,14 @@ void setup() {
   Serial.println(" ___) || | | |_| |  __/|  _ <| |_| |  /  \\");
   Serial.println("|____/ |_|  \\___/|_|   |_| \\_\\\\___/  /_/\\_\\");
   Serial.println("");
-
-  //servo.attach(servo_pin);
-  // uncomment to fine-tune PWM signal
-  servo.attach(servo_pin, servo_min_ms, servo_max_ms);
-  servo.write(servo_center);
+  
+  servo.attach(servo_pin);
+  servo.write(90);
 }
 
 
 void loop() {
-  for (int i = servo_min_pos; i < servo_max_pos; i++) {
-    servo.write(i);
-    delay(20);
-  }
-  for (int i = servo_max_pos; i > servo_min_pos; i--) {
-    servo.write(i);
-    delay(20);
-  }
+  angle += speed;
+  pos = servo_center + range * .5 * sin(angle);
+  servo.write(int(pos));
 }

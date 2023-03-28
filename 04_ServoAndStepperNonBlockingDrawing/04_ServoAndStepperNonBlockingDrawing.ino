@@ -25,7 +25,7 @@
 
 // Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
 #define MOTOR_STEPS 200
-#define RPM 120
+#define RPM 60
 
 // Since microstepping is set externally, make sure this matches the selected mode
 // Set the jumper to middle position when using MICROSTEPS 4, no jumper = MICROSTEPS 1
@@ -40,7 +40,7 @@
 #define DIR_Y 6
 #define STEP_Y 3
 
-// Driver in CNC shield Y
+// Driver in CNC shield Z
 #define DIR_Z 7
 #define STEP_Z 4
 
@@ -69,7 +69,7 @@ bool toggle_pen = false;
 long randNumber;
 
 // Initialize the driver(s)
-BasicStepperDriver stepper(MOTOR_STEPS, DIR_Z, STEP_Z, SLEEP);
+BasicStepperDriver stepper(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
 
 void setup() {
 
@@ -98,7 +98,7 @@ void setup() {
 
 void loop() {
 
-  stepper.startMove(2);
+  stepper.startMove(5);
   unsigned wait_time_micros = 1;
   while (wait_time_micros > 0) {
     wait_time_micros = stepper.nextAction();

@@ -9,3 +9,22 @@
    - Download [desktop app cncJS](https://cnc.js.org/docs/desktop-app/) 
    - Read the [cncJS user guide](https://cnc.js.org/docs/user-guide/) for more infos
 
+## Vector Drawing to gcode
+
+[Inkscape](https://inkscape.org/) (an open-source alternative to Adobe Illustrator) has a built-in plugin called pathtogcode which is basically a python script that converts your vector drawing in machine code that you can later use with cncjs and grbl.
+
+Instruction on how to use it are [here](https://all3dp.com/2/inkscape-g-code-all-you-need-to-know-to-get-started/)
+
+The generated gcode file can't be read with cncjs because of the % sign character that is present on the first and second line. Either you can delete these two lines by hand or use the commandline with following command:
+
+```
+sed -i '' '/%/d' output.gcode
+```
+
+In Inkscape convert objects to paths, then open the pathtogcode extension as described below
+
+![](images/inkscape1.png)
+
+![](images/inkscape2.png)
+
+![](images/inkscape3.png)
