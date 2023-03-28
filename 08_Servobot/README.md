@@ -30,6 +30,8 @@ p5js sketch.js uses several custom classes to calculate position/angle of the ro
   - Open inspector, check error log
   - Remix mix and add more drawing shapes to shapes.js
   
+![](images/p5serialcontrol.pngs)
+
 ## Circuit
 
 Servo motors have three wires: power, ground, and signal. The power wire is typically red, and should be connected to the 5V pin on the Arduino board. The ground wire is typically black or brown and should be connected to a ground pin on the board. The signal pin is typically yellow, orange or white and should be connected to pin 9 on the board. Second servo is connected to pin 10.

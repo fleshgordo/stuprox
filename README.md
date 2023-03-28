@@ -9,31 +9,51 @@
                                             by Tom Pawlofsky & Gordan Savicic
 ```
 
-Starter files for Studio Prototyping Extended. Examples are based on the [BasicStepper Library](https://github.com/laurb9/StepperDriver) and adapted to our course module in Bachelor Digital Ideation HSLU Lucerne.
+Starter files for Studio Prototyping Extended. Examples are based on the [BasicStepper Library](https://github.com/laurb9/StepperDriver) and [Accelstepper](https://www.airspayce.com/mikem/arduino/AccelStepper/) adapted to our course module in Bachelor Digital Ideation HSLU Lucerne.
 
 ## Intro 
 
-   - [Video Tutorials - Tube Switch Channel](https://tube.switch.ch/channels/Dcqw1ga3NL)
+   - [Video Tutorials for Motor kit Tube Switch Channel](https://tube.switch.ch/channels/Dcqw1ga3NL)
+   - [Slides Stepper Motor (download PDF in Ilias)](https://elearning.hslu.ch/ilias/goto.php?target=file_5832681_download&client_id=hslu)
  
 ## Software requirements
  
    - [Arduino IDE ](https://www.arduino.cc/en/software)
    - [Library Stepperdriver for A4988](https://github.com/laurb9/StepperDriver)
 
+ ## Checklist before Take-Off
+ 
+   - Jumper gesetzt (Mitte 1/4step) ? 
+   - Ref Voltage auf 0.6V eingestellt ?
+   - 12V ans CNC Shield (Polarität beachten) ?
+   - Servo: rot an +6V, schwarz GND am Shield, Signal Pin an SpinEn (D12)
+   - Stepper angeschlossen ? 
+   - Arduino USB an Computer ?
+   - Arduino IDE + Library installiert ?
+   - Stellring Schraube am Schrittmotor angezogen?
+   - Netzteil 12V eingeschalten?
+  
 ## Examples
 
- - #### 01_BasicStepperDriver.ino
-    Test two stepper motors attached to your shield. Make sure you have this running before continuing further
- - #### 02_BothSteppers.ino
-    Showcase the use of SyncDriver and MultiDriver with both stepper motors attached
- - #### 03_BothSteppersNonBlocking.ino
-    Showcase non-blocking function for both steppers
- - #### 04_ServoTest.ino
-    Test sketch for single servo use
+ - #### 00_StepperIntro.ino
+    Move a stepper motor. Basic example
+ - #### 01_ServoIntro.ino
+    Move a servo motor. Basic example
+ - #### 02_ServoAndStepperBlocking.ino
+    Combine both intros to run a servo and stepper in blocking mode
+ - #### 03_ServoAndStepperNonBlocking.ino
+    Combine both intros to run a servo and stepper in non-blocking mode
+ - #### 04_ServoAndStepperNonBlockingDrawing.ino
+    Draw something with servo and stepper attached
  - #### 05_ExternalInterrupt.ino
     Uses an external interrupt with an external switch to disable motors (useful for kill-switches)
  - #### 06_SerialCommunication.ino 
-    Simple Serial communication protocol to send settings and positions to Arduino
+    Simple Serial communication protocol to send settings and positions to Arduino from Serial monitor, p5js or other software interfaces
+- #### 07_GRBL
+    Custom firmware for the Arduino that turns it into a Gcode motion control for CNC machines. You can upload and control the machine through a Desktop controller such as [cncjs](https://cnc.js.org/)
+- #### 08_Servobot.ino
+    Using two servo arms to create a mini-rapid-prototyped-drawmatic-postographo-plotter. It communicates with the computer through 
+   
     
 
 # Hardware Requirements
@@ -43,3 +63,4 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
 ## Links
    - Pololu Infos for [driver A4988](https://www.pololu.com/product/1182) 
    - [Datasheet A4498 (PDF)](https://www.tme.eu/Document/25459777e672c305e474897eef284f74/POLOLU-2128.pdf)
+   - [Video Tutorials for Motor kit Tube Switch Channel](https://tube.switch.ch/channels/Dcqw1ga3NL)
