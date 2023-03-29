@@ -25,10 +25,10 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
  ## Checklist before Take-Off
  
    - Jumper gesetzt (Mitte 1/4step) ? 
-   - Ref Voltage auf 0.6V eingestellt ?
+   - Ref Voltage auf 0.48V eingestellt ?
    - 12V ans CNC Shield (Polarität beachten) ?
    - Servo: rot an +6V, schwarz GND am Shield, Signal Pin an SpinEn (D12)
-   - Stepper angeschlossen ? 
+   - Stepper angeschlossen 4poliges Kabel neben ? 
    - Arduino USB an Computer ?
    - Arduino IDE + Library installiert ?
    - Stellring Schraube am Schrittmotor angezogen?
