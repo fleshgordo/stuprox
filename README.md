@@ -38,23 +38,23 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
 
  - #### [00_StepperIntro.ino](00_StepperIntro/)
     Move a stepper motor. Basic example
- - #### 01_ServoIntro.ino
+ - #### [01_ServoIntro.ino](01_ServoIntro/)
     Move a servo motor. Basic example
- - #### 02_ServoAndStepperBlocking.ino
+ - #### [02_ServoAndStepperBlocking.ino](02_ServoAndStepperBlocking/)
     Combine both intros to run a servo and stepper in blocking mode
- - #### 03_ServoAndStepperNonBlocking.ino
+ - #### [03_ServoAndStepperNonBlocking.ino](./03_ServoAndStepperNonBlocking/)
     Combine both intros to run a servo and stepper in non-blocking mode
- - #### 04_ServoAndStepperNonBlockingDrawing.ino
+ - #### [04_ServoAndStepperNonBlockingDrawing.ino](./04_ServoAndStepperNonBlockingDrawing/)
     Draw something with servo and stepper attached
- - #### 05_ExternalInterrupt.ino
+ - #### [05_ExternalInterrupt.ino](./05_ExternalInterrupt/)
     Uses an external interrupt with an external switch to disable motors (useful for kill-switches)
- - #### 06_SerialCommunication.ino 
+ - #### [06_SerialCommunication.ino](./06_SerialCommunication/)
     Simple Serial communication protocol to send settings and positions to Arduino from Serial monitor, p5js or other software interfaces
-- #### 07_GRBL
+- #### [07_GRBL](./07_GRBL/)
     Custom firmware for the Arduino that turns it into a Gcode motion control for CNC machines. You can upload and control the machine through a Desktop controller such as [cncjs](https://cnc.js.org/)
-- #### 08_Servobot.ino
+- #### [08_Servobot.ino](./08_Servobot/)
     Using two servo arms to create a mini-rapid-prototyped-drawmatic-postographo-plotter. It communicates with the computer through serial communication, directly interfacing with a p5js sketch that uses inverse kinematics to calculate angles.
-- #### 09_AccelStepper.ino
+- #### [09_AccelStepper.ino](./09_AccelStepper/)
     AccelStepper library has much better support for acceleration and speed settings than BasicStepper. Read the [documentation](https://www.airspayce.com/mikem/arduino/AccelStepper/).
 
 # Hardware Requirements
