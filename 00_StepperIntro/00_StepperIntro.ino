@@ -4,6 +4,8 @@
    Connect STEP, DIR as indicated!
    Driverslots X, Y, Z on the CNC shield can be used
 
+   In this demo driver chip is in slot X (pin 5, 2)
+
    Adapted 2021/2022 by Gordan Savicic
    based on Copyright (C)2015-2017 Laurentiu Badea
 

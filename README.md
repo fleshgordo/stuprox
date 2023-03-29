@@ -20,6 +20,7 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
  
    - [Arduino IDE ](https://www.arduino.cc/en/software)
    - [Library Stepperdriver for A4988](https://github.com/laurb9/StepperDriver)
+   - [AccelStepper](https://www.airspayce.com/mikem/arduino/AccelStepper/index.html)
 
  ## Checklist before Take-Off
  

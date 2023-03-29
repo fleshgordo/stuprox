@@ -15,7 +15,7 @@
     Servo Data pin (orange or yellow) -> SpinEn on CNC shield (D12)
     Servo GND -> GND on CNC Shield
 
-    Stepper in Slot Z (Pin 7 & 4)
+    Stepper in Slot X (Pin 5 & 2)
 */
 
 

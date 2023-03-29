@@ -4,7 +4,7 @@
    computed
 
    Connect STEP, DIR as indicated!
-   Driverslot Z is used
+   Driverslot X (pins 5,2) are used
 
    Written by Gordan Savicic 2023
 
@@ -17,7 +17,7 @@
     Servo Data pin (orange or yellow) -> SpinEn on CNC shield (D12)
     Servo GND -> GND on CNC Shield
 
-    Stepper driver in Slot Z (Pin 7 & 4)
+    Stepper driver in Slot X (Pin 5 & 2)
 */
 
 
