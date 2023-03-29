@@ -36,7 +36,7 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
   
 ## Examples
 
- - #### 00_StepperIntro.ino
+ - #### [00_StepperIntro.ino](00_StepperIntro/)
     Move a stepper motor. Basic example
  - #### 01_ServoIntro.ino
     Move a servo motor. Basic example
