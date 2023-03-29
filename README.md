@@ -55,7 +55,7 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
 - #### [08_Servobot.ino](./08_Servobot/)
     Using two servo arms to create a mini-rapid-prototyped-drawmatic-postographo-plotter. It communicates with the computer through serial communication, directly interfacing with a p5js sketch that uses inverse kinematics to calculate angles.
 - #### [09_AccelStepper.ino](./09_AccelStepper/)
-    AccelStepper library has much better support for acceleration and speed settings than BasicStepper. Read the [documentation](https://www.airspayce.com/mikem/arduino/AccelStepper/).
+    AccelStepper library has much better support for acceleration and speed settings than BasicStepper. Read the [documentation](https://www.airspayce.com/mikem/arduino/AccelStepper/) and the [missing guide](https://hackaday.io/project/183279-accelstepper-the-missing-manual/details) for detailed explanations.
 
 # Hardware Requirements
   - Arduino UNO
