@@ -9,7 +9,7 @@
                                             by Tom Pawlofsky & Gordan Savicic
 ```
 
-Starter files for Studio Prototyping Extended. Examples are based on the [BasicStepper Library](https://github.com/laurb9/StepperDriver) and [Accelstepper](https://www.airspayce.com/mikem/arduino/AccelStepper/) adapted to our course module in Bachelor Digital Ideation HSLU Lucerne.
+Starter files for Studio Prototyping Extended. Examples are based on the [BasicStepper Library](https://github.com/laurb9/StepperDriver) and [AccelStepper library](https://www.airspayce.com/mikem/arduino/AccelStepper/) adapted to our course module in Bachelor Digital Ideation HSLU Lucerne.
 
 ## Intro 
 
@@ -20,7 +20,7 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
  
    - [Arduino IDE ](https://www.arduino.cc/en/software)
    - [Library Stepperdriver for A4988](https://github.com/laurb9/StepperDriver)
-   - [AccelStepper](https://www.airspayce.com/mikem/arduino/AccelStepper/index.html)
+   - [Library AccelStepper](https://www.airspayce.com/mikem/arduino/AccelStepper/index.html)
 
  ## Checklist before Take-Off
  
@@ -54,6 +54,8 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
     Custom firmware for the Arduino that turns it into a Gcode motion control for CNC machines. You can upload and control the machine through a Desktop controller such as [cncjs](https://cnc.js.org/)
 - #### 08_Servobot.ino
     Using two servo arms to create a mini-rapid-prototyped-drawmatic-postographo-plotter. It communicates with the computer through serial communication, directly interfacing with a p5js sketch that uses inverse kinematics to calculate angles.
+- #### 09_AccelStepper.ino
+    AccelStepper library has much better support for acceleration and speed settings than BasicStepper. Read the [documentation](https://www.airspayce.com/mikem/arduino/AccelStepper/).
 
 # Hardware Requirements
   - Arduino UNO
