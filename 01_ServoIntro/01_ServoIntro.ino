@@ -18,9 +18,12 @@ float pos = 0;
 const int servo_min_ms = 800;
 const int servo_max_ms = 2100;
 
-const int servo_min_pos = 0; // 55
-const int servo_max_pos = 180; // 135
+const int servo_min_pos = 55; // 55
+const int servo_max_pos = 135; // 135
 const int servo_center = 90;
+
+float angle = 0.0;
+float speed = 0.01;
 
 void setup() {
   Serial.begin(115200);
@@ -41,12 +44,10 @@ void setup() {
 
 
 void loop() {
-  for (int i = servo_min_pos; i < servo_max_pos; i++) {
-    servo.write(i);
-    delay(20);
-  }
-  for (int i = servo_max_pos; i > servo_min_pos; i--) {
-    servo.write(i);
-    delay(20);
-  }
+  int pos = 90 + sin(angle) * 90;
+  //Serial.println();
+  servo.write(pos);
+  delay(5);
+  angle += speed;
+
 }

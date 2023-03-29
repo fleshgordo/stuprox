@@ -27,10 +27,10 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
    - Jumper gesetzt (Mitte 1/4step) ? 
    - Ref Voltage auf 0.48V eingestellt ?
    - 12V ans CNC Shield (Polarität beachten) ?
-   - Servo: rot an +6V, schwarz GND am Shield, Signal Pin an SpinEn (D12)
-   - Stepper angeschlossen 4poliges Kabel neben ? 
+   - Servo: rot an +6V (Netzteil oder 5V vom Pinheader Shield), schwarz GND am Shield, Signal Pin an SpinEn (D12)
+   - Stepper angeschlossen 4poliges Kabel neben Slot ?
    - Arduino USB an Computer ?
-   - Arduino IDE + Library installiert ?
+   - Arduino IDE + Libraries installiert ?
    - Stellring Schraube am Schrittmotor angezogen?
    - Netzteil 12V eingeschalten?
   

@@ -42,7 +42,7 @@
 #define DIR_Y 6
 #define STEP_Y 3
 
-// Driver in CNC shield Y
+// Driver in CNC shield Z
 #define DIR_Z 7
 #define STEP_Z 4
 
@@ -91,7 +91,7 @@ void loop() {
   stepper.enable();
 
   // Moving motor one full revolution using the degree notation
-  stepper.rotate(36);
+  stepper.rotate(3600);
   pos += speed;
 
   // set servo position

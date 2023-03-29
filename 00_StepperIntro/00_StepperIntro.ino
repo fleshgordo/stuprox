@@ -18,7 +18,7 @@
 
 // Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
 #define MOTOR_STEPS 200
-#define RPM 60
+#define RPM 120
 
 // Since microstepping is set externally, make sure this matches the selected mode
 // Set the jumper to middle position when using MICROSTEPS 4, no jumper = MICROSTEPS 1
@@ -33,7 +33,7 @@
 #define DIR_Y 6
 #define STEP_Y 3
 
-// Driver in CNC shield Y
+// Driver in CNC shield Z
 #define DIR_Z 7
 #define STEP_Z 4
 
@@ -59,10 +59,7 @@ void loop()
 
   // Moving motor one full revolution using the degree notation
   stepper.rotate(360);
-
-  //stepperL.move(-MOTOR_STEPS*MICROSTEPS*7); // 200*7 = 1400 steps to rotate the entire disk
-  //stepperR.move(-MOTOR_STEPS * MICROSTEPS * 2.5); // 200*7 = 1400 steps to rotate the entire disk
-  
+ 
   // pause and allow the motor to be moved by hand
   stepper.disable();
 

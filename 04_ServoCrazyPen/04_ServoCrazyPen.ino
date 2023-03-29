@@ -57,8 +57,8 @@ float angle = 0;
 const int servo_min_ms = 800;
 const int servo_max_ms = 2100;
 
-const int servo_min_pos = 85;
-const int servo_max_pos = 115;
+const int servo_min_pos = 65;
+const int servo_max_pos = 135;
 const int servo_center_pos = 95;
 const int servo_range = servo_max_pos - servo_min_pos;
 
@@ -106,6 +106,6 @@ void loop() {
     angle += speed;
     //Serial.println(int(pos));
   }
-  delay(random(1000));
+  //delay(random(1000));
 
 }
