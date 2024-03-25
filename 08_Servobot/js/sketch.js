@@ -35,9 +35,9 @@ function setup() {
   serial = new p5.SerialPort();
 
   // Get a list the ports available and adjust the correct port
-  // serial.list(listPorts); 
+  serial.list(listPorts); 
   serial.on('connected', serverConnected);
-  serial.open("/dev/tty.usbmodem14101"); //{baudrate: 115200}
+  serial.open("/dev/tty.usbmodem113101"); //{baudrate: 115200}
   serial.on('data', serialEvent); // callback for when new data
 
   // Initialize the arms

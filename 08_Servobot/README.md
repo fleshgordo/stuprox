@@ -23,7 +23,7 @@ p5js sketch.js uses several custom classes to calculate position/angle of the ro
 
   - Upload ino file to arduino
   - Connect mini-servos to port (9, 10). +5V are taken from Arduino (bit risky in case of higher currents - better to switch to external power supply)
-  - Install [p5serialport](https://github.com/p5-serial/p5.serialcontrol/releases), open software, select port and connect
+  - ~~Install [p5serialport](https://github.com/p5-serial/p5.serialcontrol/releases), open software, select port and connect~~ Read more on p5.serial
   - Start liveserver on your desktop and open index.html
   - Modify your USB port if necessary in sketch.js ```serial.open("/dev/tty.usbmodem14101");```
   - Open browser and navigate to http://127.0.0.1:5555/index.html
@@ -43,3 +43,25 @@ Servo motors have three wires: power, ground, and signal. The power wire is typi
 ## Schematic
 
 ![](images/sweep_schem.png)
+
+## p5.serial
+
+Run p5.serial server
+
+put node into an old version where p5 serial bindings where still working...
+```
+nvm use 12.20.2
+```
+
+```
+npm install serialport -g
+npm install ws -g
+npm install p5.serialserver --unsafe-perm -g
+```
+
+```
+cd serialserver
+node startserver.js
+```
+
+Or try from here https://github.com/p5-serial/p5.serialserver
