@@ -36,18 +36,17 @@ void setup() {
   Serial.println("|____/ |_|  \\___/|_|   |_| \\_\\\\___/  /_/\\_\\");
   Serial.println("");
 
-  //servo.attach(servo_pin);
+  servo.attach(servo_pin);
   // uncomment to fine-tune PWM signal
-  servo.attach(servo_pin, servo_min_ms, servo_max_ms);
+  //servo.attach(servo_pin, servo_min_ms, servo_max_ms);
   servo.write(servo_center);
 }
 
 
 void loop() {
   int pos = 90 + sin(angle) * 90;
-  //Serial.println();
+  //Serial.println(pos);
   servo.write(pos);
   delay(5);
   angle += speed;
-
 }

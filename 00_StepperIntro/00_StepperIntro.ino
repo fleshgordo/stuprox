@@ -48,6 +48,9 @@ void setup()
   // Pass some config to the instances and begin
   stepper.begin(RPM, MICROSTEPS);
 
+  // set speed profile with acceleration
+  //stepper.setSpeedProfile(stepper.LINEAR_SPEED, 500, 500);
+  
   // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
   stepper.setEnableActiveState(LOW);
 }

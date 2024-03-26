@@ -7,7 +7,7 @@ class Arm {
     this.disableFollow = false;
     this.oldMouseX = 0;
     this.oldMouseY = 0;
-    this.offset = -20;
+    this.offset = 0; // adjust!!
   }
 
   setBase() {

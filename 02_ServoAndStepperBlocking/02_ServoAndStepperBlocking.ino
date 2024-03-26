@@ -91,7 +91,7 @@ void loop() {
   stepper.enable();
 
   // Moving motor one full revolution using the degree notation
-  stepper.rotate(3600);
+  stepper.rotate(360);
   pos += speed;
 
   // set servo position
