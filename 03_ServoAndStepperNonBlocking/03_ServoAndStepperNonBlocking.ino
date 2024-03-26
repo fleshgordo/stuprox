@@ -92,22 +92,36 @@ void setup() {
   servo.write(pos);
 }
 
-int final_pos = MOTOR_STEPS * MICROSTEPS * 7; // motor steps to make the platform rotate one time
+int stepperRotation = MOTOR_STEPS * MICROSTEPS * 2; // motor steps to make the platform rotate one time
 bool toggle_pen = false;
+
+const int minPosition = 60;  // Minimum servo position
+const int maxPosition = 120; // Maximum servo position
+const int stepSize = 1;      // Step size for increment/decrement
+
+int currentPosition = 90;    // Initial servo position
+int stepDirection = 1;       // Initial step direction (1 for increment, -1 for decrement)
 
 void loop() {
 
   stepper.enable();
-  stepper.startMove(final_pos);
+  stepper.startMove(stepperRotation);
 
   unsigned wait_time_micros = 1;
   while (wait_time_micros > 0) {
     wait_time_micros = stepper.nextAction();
     int remaining = stepper.getStepsRemaining();
-    int new_pos = 0;
-    // this is mapping the remaining steps to a range where the servo arm operates
-    new_pos = servo_max_pos - ((float(servo_range) / final_pos) * remaining);
-    servo.write(new_pos);
+    
+    // Update servo position
+    servo.write(currentPosition);
+
+    // Increment or decrement current position based on step direction
+    currentPosition += stepDirection * stepSize;
+
+    // Change step direction if limits are reached
+    if (currentPosition >= maxPosition || currentPosition <= minPosition) {
+      stepDirection = -stepDirection;
+    }
     //Serial.println(new_pos);
   }
   delay(500);

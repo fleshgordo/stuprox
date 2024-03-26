@@ -43,7 +43,7 @@ const float full_rotation_R = MOTOR_STEPS * MICROSTEPS * 2.5;
 const float full_rotation_L = MOTOR_STEPS * MICROSTEPS * 7;
 
 const byte interruptPin = 2;
-boolean one_shot = false;
+volatile boolean one_shot = false; // read more about volatile here https://www.arduino.cc/reference/en/language/variables/variable-scope-qualifiers/volatile/
 
 void setup() {
   stepperL.begin(RPM, MICROSTEPS);

@@ -6,7 +6,7 @@
 
    In this demo driver chip is in slot X (pin 5, 2)
 
-   Adapted 2021/2022 by Gordan Savicic
+   Adapted 2023/2024 by Gordan Savicic
    based on Copyright (C)2015-2017 Laurentiu Badea
 
    This file may be redistributed under the terms of the MIT license.
