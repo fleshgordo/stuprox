@@ -2,7 +2,7 @@
    Simple demo with DRV8255 driver on CNC shield
 
    Connect STEP, DIR as indicated!
-   Driverslots X, Y, Z on the CNC shield can be used
+   Driverslots X, Y, Z, A on the CNC shield can be used
 
    In this demo driver chip is in slot X (pin 5, 2)
 
@@ -37,11 +37,18 @@
 #define DIR_Z 7
 #define STEP_Z 4
 
+// Driver in CNC shield A 
+// For using shield A, you need to set two jumpers in the slot section XYZ D12/D13
+// other modes are cloning either X, Y, Z
+// read 4th axis configuration https://www.zyltech.com/arduino-cnc-shield-instructions/
+#define DIR_A 13
+#define STEP_A 12
+
 // Define the pin for enable/disable functionality
 #define SLEEP 8
 
 // Initialize the driver(s)
-BasicStepperDriver stepper(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
+BasicStepperDriver stepper(MOTOR_STEPS, DIR_A, STEP_A, SLEEP);
 
 void setup()
 {
