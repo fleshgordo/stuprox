@@ -1,14 +1,18 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const path = require('path');
 const {
     SerialPort,
     ReadlineParser
 } = require('serialport')
 
 
+/* SERIALPORT */
+
+
 // Define the port name and baud rate
-const portName = '/dev/cu.usbmodem1101'; // Change this to the correct port for your Arduino
+const portName = '/dev/cu.usbmodem11101'; // Change this to the correct port for your Arduino
 //const portName = '/dev/cu.usbmodem21301'; 
 const baudRate = 115200; // Change this to match the baud rate used by your Arduino
 
@@ -23,12 +27,25 @@ port.on('open', () => {
     console.log(`Serial port ${portName} is open.`);
 });
 
-// Middleware to parse incoming request bodies
-app.use(bodyParser.urlencoded({ extended: false }));
+// Listen for incoming data
+port.on('data', (data) => {
+    console.log('Received data:', data.toString());
+    
+});
 
-app.listen(8000, function () {
-    console.log('Example app listening on port ' + port + '!');
-  });
+/* SERVER STUFF */
+
+// Start the server
+const PORT = 8000;
+
+app.use(express.static(path.join(__dirname, '/')));
+// Middleware to parse incoming request bodies
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+});
 
 // Serve the index.html file
 app.get('/', (req, res) => {

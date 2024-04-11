@@ -1,20 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G-code Sender</title>
-    <script src="./script.js"></script>
+    <link href="style.css" type="text/css" rel="stylesheet">
 </head>
+
 <body>
-    <h1>G-code Sender</h1>
-    <form id="gcode-form" action="/send-gcode" method="post">
-        <label for="gcode">Enter G-code command:</label><br>
-        <input type="text" id="gcode" name="gcode" required><br>
-        <button type="submit">Send G-code</button>
-        <button class="servo_down">Servo Up</button>
-        <button class="servo_down">Servo Down</button>
-    </form>
-    <div id="response-message"></div>
+    <div class="container">
+        <h1>G-CODE SENDER</h1>
+        <form id="gcode-form">
+            <h3>Enter G-code command(s):</h3>
+            <textarea id="gcode" name="gcode"></textarea><br>
+            <!-- <input type="text" id="gcode" name="gcode"> -->
+            <button type="submit">Send</button><br><br><br>
+            <button class="servo_up">Servo Up</button>
+            <button class="servo_down">Servo Down</button>
+            <select class="drop_down">
+                <option value="none">---</option>
+                <option value="G01 X0 Y0">Homing</option>
+                <option value="$">$$</option>
+            </select>
+        </form>
+        <div id="response-message"></div>
+    </div>
+    <script>
+        const GCODE_PEN_UP = "G01 Z1 F500";
+        const GCODE_PEN_DOWN = "G01 Z-1 F500";
+
+        async function send_gcode(gcode_content) {
+            if (gcode_content !== "none") {
+                try {
+                    const response = await fetch('/send-gcode', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            gcode: gcode_content
+                        })
+                    });
+                    const data = await response.json();
+                    const current_text = document.querySelector('#response-message').innerText;
+
+                    document.querySelector('#response-message').innerText = current_text + "\n" + data
+                        .message;
+                } catch (error) {
+                    console.error('Error sending G-code:', error);
+                    document.querySelector('#response-message').innerText = 'Error sending G-code';
+                }
+            }
+        }
+
+        /***************************
+         ** EVENT HANDLERS
+         ****************************/
+
+        document.querySelector('#gcode-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const lines = formData.get('gcode').split("\n");
+
+            //console.log(lines)
+            send_gcode(lines[0])
+
+            // TBD ...
+            // Function to send the next line recursively
+            // async function sendNextLine(index) {
+            //     // Check if there are more lines to send
+            //     if (index < lines.length) {
+            //         var line = lines[index];
+            //         try {
+            //             const response = await fetch('/send-gcode', {
+            //                 method: 'POST',
+            //                 headers: {
+            //                     'Content-Type': 'application/json'
+            //                 },
+            //                 body: JSON.stringify({
+            //                     gcode: line
+            //                 })
+            //             });
+            //             const data = await response.json();
+            //             const current_text = document.querySelector('#response-message').innerText;
+                        
+            //             document.querySelector('#response-message').innerText = current_text + "\n" +
+            //                 data.message;
+            //                 sendNextLine(index + 1);
+            //         } catch (error) {
+            //             console.error('Error sending G-code:', error);
+            //             document.querySelector('#response-message').innerText = 'Error sending G-code';
+            //         }
+
+            //         // Send the line to the serial port
+            //         // serialPort.write(line + '\n', function (err) {
+            //         //     if (err) {
+            //         //         console.error('Error writing to serial port:', err.message);
+            //         //     } else {
+            //         //         console.log('Sent G-code line:', line);
+            //         //         // todo
+            //         //         // // Wait for serial port response before sending next line
+            //         //         // serialPort.once('data', function (data) {
+            //         //         //     // Check if the response contains "OK"
+            //         //         //     if (data.toString().includes('OK')) {
+            //         //         //         // Send the next line
+            //         //         //         sendNextLine(index + 1);
+            //         //         //     }
+            //         //         // });
+            //         //     }
+            //         // });
+            //     } else {
+            //         console.log('All lines sent successfully');
+            //     }
+            // }
+
+            // // Start sending the lines from the first line
+            // sendNextLine(0);
+            //send_gcode(gcode)
+        });
+
+        document.querySelector(".servo_down").addEventListener('click', async (event) => {
+            event.preventDefault();
+            send_gcode(GCODE_PEN_DOWN);
+        });
+        document.querySelector(".servo_up").addEventListener('click', async (event) => {
+            event.preventDefault();
+            send_gcode(GCODE_PEN_UP);
+        });
+        document.querySelector(".drop_down").addEventListener('change', async (event) => {
+            event.preventDefault();
+            send_gcode(document.querySelector(".drop_down").value);
+        });
+    </script>
 </body>
 </html>

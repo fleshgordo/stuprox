@@ -1,20 +1,20 @@
-# Image tattoo serial communication
+# Send gcode from the web
 
 ## Prerequisite
 
 Install node and serialport
 
 ```
-npm install serialport
+npm install -g serialport
+npm install -g express
 ```
 
-Upload ino file to arduino
+Upload [grbl](https://github.com/bdring/Grbl_Pen_Servo) file to arduino. Servo signal pin to Z+
 
 ## Run
 
 ```
-node serial_send.js
+node server.js
 ```
 
-Should send the byte array via serialport to arduino
-
+open web-browser and go to link [http://localhost:8000/](http://localhost:8000/)

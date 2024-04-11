@@ -1,0 +1,27 @@
+@font-face {
+    font-family: "Anthony";
+    src: url("./fonts/Anthony.woff2") format('woff2');
+}
+
+@font-face {
+    font-family: "Anthony";
+    src: url("./fonts/Anthony.woff") format('woff');
+}
+
+@font-face {
+    font-family: "Anthony";
+    src: url("./fonts/Anthony.eot") format('eot');
+}
+
+body,html {
+    margin: 0;
+    font-size: 1rem;
+    
+}
+h1,h3 {
+    font-family: "Anthony";
+}
+.container {
+    margin: 1rem;
+    display: grid;
+}
