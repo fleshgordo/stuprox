@@ -2,12 +2,12 @@ let img; // Variable to hold the image
 
 function preload() {
   // Load the image
-  img = loadImage('gordo.png');
+  img = loadImage('bunny100.png');
 }
 
 function setup() {
   // Create a canvas
-  createCanvas(32, 32);
+  createCanvas(100, 100);
 
   // Display the image
   image(img, 0, 0);
@@ -53,7 +53,7 @@ function getGrayscaleValues(img) {
       let b = img.pixels[index + 2];
 
       // Calculate grayscale value using luminance formula
-      let grayscale = (r * 0.2126 + g * 0.7152 + b * 0.0722);
+      let grayscale = String(parseInt(r * 0.2126 + g * 0.7152 + b * 0.0722)).padStart(3, '0');
       let white_or_black = grayscale > 128 ? 1 : 0;
       // Add grayscale value to the array
       grayscaleValues.push(white_or_black);
