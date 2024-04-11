@@ -2,7 +2,7 @@ let img; // Variable to hold the image
 
 function preload() {
   // Load the image
-  img = loadImage('bunny32.png');
+  img = loadImage('gordo.png');
 }
 
 function setup() {
