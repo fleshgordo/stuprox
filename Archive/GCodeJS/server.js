@@ -7,6 +7,8 @@ const {
     ReadlineParser
 } = require('serialport')
 
+const http = require('http');
+const WebSocket = require('ws');
 
 /* SERIALPORT */
 
@@ -30,7 +32,6 @@ port.on('open', () => {
 // Listen for incoming data
 port.on('data', (data) => {
     console.log('Received data:', data.toString());
-    
 });
 
 /* SERVER STUFF */
