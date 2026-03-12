@@ -18,7 +18,7 @@
 
 // Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
 #define MOTOR_STEPS 200
-#define RPM 120
+#define RPM 40
 
 // Since microstepping is set externally, make sure this matches the selected mode
 // Set the jumper to middle position when using MICROSTEPS 4, no jumper = MICROSTEPS 1
@@ -37,7 +37,7 @@
 #define DIR_Z 7
 #define STEP_Z 4
 
-// Driver in CNC shield A 
+// Driver in CNC shield A ?? also possible but ...
 // For using shield A, you need to set two jumpers in the slot section XYZ D12/D13
 // other modes are cloning either X, Y, Z
 // read 4th axis configuration https://www.zyltech.com/arduino-cnc-shield-instructions/
@@ -48,7 +48,7 @@
 #define SLEEP 8
 
 // Initialize the driver(s)
-BasicStepperDriver stepper(MOTOR_STEPS, DIR_A, STEP_A, SLEEP);
+BasicStepperDriver stepper(MOTOR_STEPS, DIR_Y, STEP_Y, SLEEP);
 
 void setup()
 {
@@ -56,8 +56,8 @@ void setup()
   stepper.begin(RPM, MICROSTEPS);
 
   // set speed profile with acceleration
-  //stepper.setSpeedProfile(stepper.LINEAR_SPEED, 500, 500);
-  
+  // stepper.setSpeedProfile(stepper.LINEAR_SPEED, 500, 500);
+
   // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
   stepper.setEnableActiveState(LOW);
 }
@@ -69,10 +69,9 @@ void loop()
 
   // Moving motor one full revolution using the degree notation
   stepper.rotate(360);
- 
+
   // pause and allow the motor to be moved by hand
   stepper.disable();
 
   delay(2000); // repeat after 2sec. pause
-  
 }

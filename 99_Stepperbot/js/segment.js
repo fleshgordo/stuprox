@@ -1,74 +1,39 @@
+// Simple segment helper for the 4-bar linkage visualization
+// Each segment has a fixed pivot point and a computed endpoint
 class Segment {
-  constructor(x, y, len, angle, id) {
-    this.from = createVector(x, y); // a
-    this.to = createVector(); // b
-    this.len = len;
+  constructor(pivotX, pivotY, length, angle = 0, color = [0, 0, 0]) {
+    this.pivot = createVector(pivotX, pivotY); // Fixed pivot point
+    this.endpoint = createVector(); // Moving endpoint
+    this.length = length;
     this.angle = angle;
-    this.id = id;
-    this.parent = null;
-    this.dir = true;
-    this.reCalculate();
-    this.maxDeg = 180;
-    this.minDeg = 0;
+    this.color = color;
+    this.updateEndpoint();
   }
 
-  createParent(len, angle, id) {
-    let parent = new Segment(0, 0, len, angle, id);
-    this.parent = parent;
-    parent.follow(this.from.x, this.from.y);
-    this.reCalculate();
-    return this.parent;
+  // Set the angle and recalculate endpoint
+  setAngle(angle) {
+    this.angle = angle;
+    this.updateEndpoint();
   }
 
-  setBase(base) {
-    this.from = p5.Vector.copy(base)
+  // Calculate endpoint position based on angle
+  updateEndpoint() {
+    this.endpoint.x = this.pivot.x + cos(this.angle) * this.length;
+    this.endpoint.y = this.pivot.y + sin(this.angle) * this.length;
   }
 
-  follow(target_x, target_y) {
-    let target = createVector(target_x, target_y);
-    let dir = p5.Vector.sub(target, this.from);
-    this.angle = dir.heading();
-    if (this.parent == null) {
-      this.checkLimits();
-      //console.log(`motor id: ${this.id} angle: ${this.angle * 180 / PI} `)
-    }
-    dir.setMag(this.len)
-    dir.mult(-1)
-    this.from = p5.Vector.add(target, dir)
-  }
-
-  reCalculate() {
-    let dx = cos(this.angle) * this.len;
-    let dy = sin(this.angle) * this.len;
-    this.to.set(this.from.x + dx, this.from.y + dy); // b
-  }
-
-  checkLimits() {
-    if (degrees(this.angle) > this.maxDeg) {
-      this.angle = radians(this.maxDeg)
-    }
-    if (degrees(this.angle) < this.minDeg) {
-      this.angle = radians(this.minDeg)
-    }
-    this.reCalculate();
-  }
-
-  update() {
-    if (this.parent != null) {
-      this.from = this.parent.to.copy(); // a=
-    }
-    this.reCalculate();
-  }
-
+  // Draw the segment
   show() {
-    strokeWeight(2);
-    this.parent == null ? stroke(255, 0, 0) : stroke(0);
+    stroke(this.color[0], this.color[1], this.color[2]);
+    strokeWeight(3);
+    line(this.pivot.x, this.pivot.y, this.endpoint.x, this.endpoint.y);
 
-    line(this.from.x, this.from.y, this.to.x, this.to.y);
+    // Draw pivot point
+    fill(this.color[0], this.color[1], this.color[2]);
     noStroke();
-    fill(51);
-    strokeWeight(5);
-    ellipse(this.from.x, this.from.y, 5, 5);
-    ellipse(this.to.x, this.to.y, 5, 5);
+    ellipse(this.pivot.x, this.pivot.y, 8, 8);
+
+    // Draw endpoint
+    ellipse(this.endpoint.x, this.endpoint.y, 6, 6);
   }
 }

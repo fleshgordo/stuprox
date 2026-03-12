@@ -29,24 +29,27 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Booting postplotter ... Fasten your seatbelts! ");
   Serial.println("");
-  Serial.println(" ____ _____ _   _ ____  ____   ___   __  __");
-  Serial.println("/ ___|_   _| | | |  _ \\|  _ \\ / _ \\  \\ \\/ /");
-  Serial.println("\\___ \\ | | | | | | |_) | |_) | | | |  \\  /");
-  Serial.println(" ___) || | | |_| |  __/|  _ <| |_| |  /  \\");
-  Serial.println("|____/ |_|  \\___/|_|   |_| \\_\\\\___/  /_/\\_\\");
+  Serial.println(" ____ _____ _   _ ______  __");
+  Serial.println("/ ___|_   _| | | |  _ \\ \\/ /");
+  Serial.println("\\___ \\ | | | | | | |_) \\  /");
+  Serial.println(" ___) || | | |_| |  __//  \\");
+  Serial.println("|____/ |_|  \\___/|_|  /_/\\_\\");
   Serial.println("");
 
   servo.attach(servo_pin);
   // uncomment to fine-tune PWM signal
   //servo.attach(servo_pin, servo_min_ms, servo_max_ms);
   servo.write(servo_center);
+  servo.write(0);
+  delay(250);
+  //servo.write(servo_max_pos);
 }
 
 
 void loop() {
-  int pos = 90 + sin(angle) * 90;
-  //Serial.println(pos);
-  servo.write(pos);
-  delay(5);
-  angle += speed;
+  // int pos = 90 + sin(angle) * 90;
+  // //Serial.println(pos);
+  // servo.write(pos);
+  // delay(5);
+  // angle += speed;
 }

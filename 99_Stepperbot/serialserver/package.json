@@ -1,0 +1,13 @@
+{
+    "name": "stupx-serialserver",
+    "version": "1.0.0",
+    "description": "p5.serialport server for Stepperbot",
+    "main": "startserver.js",
+    "scripts": {
+        "start": "node startserver.js"
+    },
+    "dependencies": {
+        "serialport": "10.5.0",
+        "ws": "^7.5.9"
+    }
+}

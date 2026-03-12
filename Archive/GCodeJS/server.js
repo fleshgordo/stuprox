@@ -31,7 +31,31 @@ port.on('open', () => {
 
 // Listen for incoming data
 port.on('data', (data) => {
-    console.log('Received data:', data.toString());
+  console.log('Received data:', data.toString());
+
+  // If the received data contains "OK", send a WebSocket message to the client
+  if (data.toString().includes('ok')) {
+      wss.clients.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {
+              client.send('OK received from GRBL');
+          }
+      });
+  }
+});
+
+/* WEBSOCKET  */
+
+// Create a WebSocket server instance
+const wss = new WebSocket.Server({ server });
+
+// WebSocket connection handler
+wss.on('connection', (ws) => {
+  console.log('WebSocket client connected');
+
+  // Handle messages from the client (not necessary for this use case)
+  ws.on('message', (message) => {
+      console.log('Received message from client:', message);
+  });
 });
 
 /* SERVER STUFF */

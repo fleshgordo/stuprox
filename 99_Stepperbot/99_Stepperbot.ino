@@ -6,27 +6,67 @@
 |____/ |_|  \___/|_|   |_| \_\\___/  /_/\_\
                                             by Tom Pawlofsky & Gordan Savicic
 
+5-BAR LINKAGE DRAWING ROBOT
+Receives angle commands from p5.js via serial and moves stepper motors
+Command format: X<angle>,Y<angle> (e.g., X45,Y90)
+
+ANTI-JITTER OPTIMIZATION:
+- Set DEBUG_MODE to false to reduce serial traffic
+- JavaScript only sends commands when angles change > 0.5 degrees
+- This prevents constant 60fps command flooding that causes motor jitter
+
+IMPORTANT: The incoming values are in DEGREES but are currently used as STEPS
+If you need angle-to-step conversion, uncomment the ANGLE_TO_STEPS section below
 */
 
 #include <Arduino.h>
 #include "BasicStepperDriver.h"
 
+// ============================================================================
+// STEPPER MOTOR CONFIGURATION
+// ============================================================================
+
 // Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
 #define MOTOR_STEPS 200
-#define RPM 60
+#define RPM 60 // Reduce to 30 if experiencing jitter
 
-// Since microstepping is set externally, make sure this matches the selected mode
-// If it doesn't, the motor will move at a different RPM than chosen
-// 1=full step, 2=half step etc.
+// Microstepping configuration
+// MUST match the jumper settings on your A4988/DRV8825 driver!
+// 1=full step, 2=half step, 4=quarter step, 8=eighth step, 16=sixteenth step
+// For A4988 1/4 step: MS1=HIGH, MS2=HIGH, MS3=LOW
 #define MICROSTEPS 4
 
-// All the wires needed for full functionality
-#define DIR_L 5
-#define STEP_L 2
+// ============================================================================
+// GEAR RATIO & ANGLE CONVERSION
+// ============================================================================
+// If using gears or pulleys, define ratio here
+// Example: If motor shaft has 20 teeth and arm shaft has 60 teeth, ratio = 3.0
+#define GEAR_RATIO 1.0 // Direct drive = 1.0
 
-#define DIR_R 6
-#define STEP_R 3
-// Uncomment line to use enable/disable functionality
+// Calculate steps per degree for precise conversion
+// Using startMove() with explicit step calculation for maximum precision
+const float STEPS_PER_DEGREE = (MOTOR_STEPS * MICROSTEPS * GEAR_RATIO) / 360.0;
+
+// ============================================================================
+// DEBUG CONFIGURATION
+// ============================================================================
+// Set to false to reduce serial output and prevent motor jitter
+#define DEBUG_MODE false
+
+// ============================================================================
+// PIN CONFIGURATION
+// ============================================================================
+
+// All the wires needed for full functionality
+// Left stepper on CNC shield Y slot
+#define DIR_L 6
+#define STEP_L 3
+
+// Right stepper on CNC shield X slot
+#define DIR_R 5
+#define STEP_R 2
+
+// Enable/Sleep pin for both drivers
 #define SLEEP 8
 
 // Uncomment line to use enable/disable functionality
@@ -34,123 +74,237 @@ BasicStepperDriver stepperL(MOTOR_STEPS, DIR_L, STEP_L, SLEEP);
 BasicStepperDriver stepperR(MOTOR_STEPS, DIR_R, STEP_R, SLEEP);
 
 const byte numChars = 32;
-char receivedChars[numChars];  // an array to store the received data
-boolean newData = false;       // toggle new message
-boolean toggleEN = false;
+char receivedChars[numChars]; // an array to store the received data
+boolean newData = false;      // toggle new message
+boolean toggleEN = false;     // true = motors currently enabled
 
-int currentPositionL = 0;
-int currentPositionR = 0;
+const int STARTUP_HOME_X = -90;
+const int STARTUP_HOME_Y = 0;
 
-void setup() {
+int currentPositionL = STARTUP_HOME_Y;
+int currentPositionR = STARTUP_HOME_X;
+
+void setup()
+{
   Serial.begin(9600);
-  Serial.println("Booting postplotter ... Fasten your seatbelts! ");
-  Serial.println("");
-  Serial.println(" ____ _____ _   _ ____  ____   ___   __  __");
-  Serial.println("/ ___|_   _| | | |  _ \\|  _ \\ / _ \\  \\ \\/ /");
-  Serial.println("\\___ \\ | | | | | | |_) | |_) | | | |  \\  /");
-  Serial.println(" ___) || | | |_| |  __/|  _ <| |_| |  /  \\");
-  Serial.println("|____/ |_|  \\___/|_|   |_| \\_\\\\___/  /_/\\_\\");
-  Serial.println("");
-  Serial.println("Press ? for help");
+  Serial.println(F("Booting postplotter..."));
+  Serial.println(F("5-Bar Linkage Robot Ready"));
+  Serial.println(F("Press ? for help"));
 
   stepperL.begin(RPM, MICROSTEPS);
   stepperR.begin(RPM, MICROSTEPS);
+
+  // Disable acceleration for constant linear speed
+  stepperL.setSpeedProfile(stepperL.LINEAR_SPEED);
+  stepperR.setSpeedProfile(stepperR.LINEAR_SPEED);
 
   // this is needed for enabling/disabling steppers
   stepperL.setEnableActiveState(LOW);
   stepperR.setEnableActiveState(LOW);
 
-  stepperR.enable();
-  stepperL.enable();
+  stepperR.disable();
+  stepperL.disable();
+
+  Serial.println(F("Steppers initialized: DISABLED"));
+  Serial.println(F("Commands in DEGREES (startMove)"));
+  Serial.print(F("Steps per degree: "));
+  Serial.println(STEPS_PER_DEGREE);
+  Serial.print(F("1 full rotation = "));
+  Serial.print(MOTOR_STEPS * MICROSTEPS);
+  Serial.println(F(" steps"));
+  Serial.print(F("Startup sync position X"));
+  Serial.print(STARTUP_HOME_X);
+  Serial.print(F(",Y"));
+  Serial.println(STARTUP_HOME_Y);
+
+  Serial.println(F("Manually set motors to X-90,Y0, then enable from web UI"));
 }
 
-void loop() {
+void loop()
+{
   receiveData();
-  if (newData == true) {
+  if (newData == true)
+  {
     handleData();
     newData = false;
   }
 }
 
-void receiveData() {
+void receiveData()
+{
   static byte ndx = 0;
   char endMarker = '\n';
   char receivingChar;
-  while (Serial.available() > 0 && newData == false) {
+  while (Serial.available() > 0 && newData == false)
+  {
     receivingChar = Serial.read();
-    if (receivingChar != endMarker) {
+    if (receivingChar != endMarker)
+    {
       receivedChars[ndx] = receivingChar;
       ndx++;
-      if (ndx >= numChars) {
+      if (ndx >= numChars)
+      {
         ndx = numChars - 1;
       }
-    } else {
-      receivedChars[ndx] = '\0';  // terminate the string
+    }
+    else
+    {
+      receivedChars[ndx] = '\0'; // terminate the string
       ndx = 0;
       newData = true;
     }
   }
 }
 
-void handleData() {
-  Serial.print("DEBUG: This came in ... ");
+void handleData()
+{
+#if DEBUG_MODE
+  Serial.print(F("DEBUG: This came in ... "));
   Serial.println(receivedChars);
+#endif
 
-  if (receivedChars[0] == 'X') {
+  if (receivedChars[0] == 'X')
+  {
     int pos_X;
     int pos_Y;
     sscanf(receivedChars, "X%d,Y%d", &pos_X, &pos_Y);
-    char buffer[40];
-    Serial.print("*** *** Moving stepper angle X:");
+
+#if DEBUG_MODE
+  Serial.print(F("*** *** Received X:"));
     Serial.print(pos_X);
-    Serial.print(" Y:");
+  Serial.print(F(" Y:"));
     Serial.println(pos_Y);
+#endif
 
-    // Map incoming values ()
-    //int targetPositionL = map(pos_X, 0, 180, 0, 200);
-    //int targetPositionR = map(pos_Y, 0, 180, 0, 200);
+    // Safety limits
+    if (pos_X < -1000 || pos_Y < -1000 || pos_Y > 1000 || pos_X > 1000)
+    {
+      Serial.println(F("ERROR: Position out of range!"));
+      pos_X = 0;
+      pos_Y = 0;
+    }
 
-    int stepsToMoveL = pos_X - currentPositionL;
-    int stepsToMoveR = pos_Y - currentPositionR;
+    // MOTOR MAPPING: L motor = Y command, R motor = X command
+    // startRotate() expects DEGREES, so we pass angles directly
+    int targetPositionL = pos_Y; // Left motor uses Y (in degrees)
+    int targetPositionR = pos_X; // Right motor uses X (in degrees)
 
-    stepperL.startRotate(stepsToMoveL);
-    stepperR.startRotate(stepsToMoveR);
+#if DEBUG_MODE
+  Serial.print(F("*** Target angles - L:"));
+    Serial.print(targetPositionL);
+  Serial.print(F(" deg R:"));
+    Serial.print(targetPositionR);
+  Serial.println(F(" deg"));
+#endif
+
+    // Calculate degrees to move
+    int degreesToMoveL = targetPositionL - currentPositionL;
+    int degreesToMoveR = targetPositionR - currentPositionR;
+
+    // Convert degrees to steps for precise control
+    long stepsToMoveL = round(degreesToMoveL * STEPS_PER_DEGREE);
+    long stepsToMoveR = round(degreesToMoveR * STEPS_PER_DEGREE);
+
+#if DEBUG_MODE
+  Serial.print(F("*** Steps to move - L:"));
+    Serial.print(stepsToMoveL);
+  Serial.print(F(" ("));
+    Serial.print(degreesToMoveL);
+  Serial.print(F(" deg) R:"));
+    Serial.print(stepsToMoveR);
+  Serial.print(F(" ("));
+    Serial.print(degreesToMoveR);
+  Serial.println(F(" deg)"));
+#endif
+
+    // Use startMove for precise step control
+    stepperL.startMove(stepsToMoveL);
+    stepperR.startMove(stepsToMoveR);
 
     unsigned wait_time_microsL = 1;
     unsigned wait_time_microsR = 1;
 
-    while (wait_time_microsL > 0 || wait_time_microsR > 0) {
+    while (wait_time_microsL > 0 || wait_time_microsR > 0)
+    {
       wait_time_microsL = stepperL.nextAction();
       wait_time_microsR = stepperR.nextAction();
     }
 
-    // update current position
-    currentPositionL += stepsToMoveL;
-    currentPositionR += stepsToMoveR;
+    // update current position (in degrees)
+    currentPositionL = targetPositionL;
+    currentPositionR = targetPositionR;
 
-    Serial.print("*** *** Current position L:");
+    // Always send a completion token so the web UI can release arduinoBusy
+    // even when DEBUG_MODE is false.
+    Serial.println(F("DONE"));
+
+#if DEBUG_MODE
+  Serial.print(F("*** *** Current position L:"));
     Serial.print(currentPositionL);
-    Serial.print(" R:");
+  Serial.print(F(" R:"));
     Serial.println(currentPositionR);
-    Serial.println("*** DONE ");
+  Serial.println(F("*** DONE "));
+#endif
   }
 
-  else if (receivedChars[0] == 'E') {
-    if (toggleEN) {
-      stepperR.enable();
-      stepperL.enable();
-    } else {
+  else if (receivedChars[0] == 'H')
+  {
+    currentPositionL = STARTUP_HOME_Y;
+    currentPositionR = STARTUP_HOME_X;
+    Serial.print(F("Synced current position to X"));
+    Serial.print(currentPositionR);
+    Serial.print(F(",Y"));
+    Serial.println(currentPositionL);
+  }
+
+  else if (receivedChars[0] == 'E')
+  {
+    // Toggle motor enable/disable state
+    if (toggleEN)
+    {
+      // Motors are currently enabled, so disable them
       stepperR.disable();
       stepperL.disable();
+      Serial.println(F("Steppers DISABLED - coils disengaged"));
+    }
+    else
+    {
+      // Motors are currently disabled, so enable them
+      stepperR.enable();
+      stepperL.enable();
+      Serial.println(F("Steppers ENABLED - coils energized"));
     }
     toggleEN = !toggleEN;
+  }
 
-  } else if (receivedChars[0] == '?') {
-    Serial.println("------------------------------------------------------------");
-    Serial.println("HELP ");
-    Serial.println("------------------------------------------------------------");
-    Serial.println("Use following commands to interact with servobot: ");
-    Serial.println("X10,Y40 - rotate servo 1 to angle 10, rotate servo 2 to angle 40");
-    Serial.println("E - toggle to enable/disable steppers");
+  else if (receivedChars[0] == '?')
+  {
+    Serial.println(F("---------------- STUPX HELP ----------------"));
+    Serial.println(F("Commands:"));
+    Serial.println(F("  X<val>,Y<val>  move steppers in DEGREES"));
+    Serial.println(F("  E              toggle enable/disable steppers"));
+    Serial.println(F("  H              sync startup position X-90,Y0"));
+    Serial.println(F("  ?              show this help menu"));
+    Serial.println(F("Configuration:"));
+    Serial.print(F("  Motor steps: "));
+    Serial.println(MOTOR_STEPS);
+    Serial.print(F("  Microstepping: 1/"));
+    Serial.println(MICROSTEPS);
+    Serial.print(F("  RPM: "));
+    Serial.println(RPM);
+    Serial.print(F("  Steps per revolution: "));
+    Serial.println(MOTOR_STEPS * MICROSTEPS);
+    Serial.print(F("  Steps per degree: "));
+    Serial.println(STEPS_PER_DEGREE);
+    Serial.println(F("  Mode: angle input with explicit step conversion"));
+    Serial.println(F("Current Status:"));
+    Serial.print(F("  Steppers: "));
+    Serial.println(toggleEN ? F("ENABLED") : F("DISABLED"));
+    Serial.print(F("  Position L: "));
+    Serial.print(currentPositionL);
+    Serial.print(F(" deg  Position R: "));
+    Serial.print(currentPositionR);
+    Serial.println(F(" deg"));
+    Serial.println(F("--------------------------------------------"));
   }
 }

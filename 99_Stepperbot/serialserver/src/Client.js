@@ -1,9 +1,9 @@
 // Client object that gets created when new web socket client connects to server.
 // Maintains SerialPort objects that the client subscribes to.
 
-let sp = require('serialport');
-let SerialPort = require('./SerialPort');
-let WebSocketServer = require('ws').Server;
+const { SerialPort: SP } = require("serialport");
+let SerialPort = require("./SerialPort");
+let WebSocketServer = require("ws").Server;
 
 // represents a web socket client. Maintains SerialPort objects that the client subscribes to.
 class Client {
@@ -18,20 +18,20 @@ class Client {
 
   // echo received message back to web client
   echo(msg) {
-    this.sendit({ method: 'echo', data: msg });
+    this.sendit({ method: "echo", data: msg });
   }
 
   // list all available serial ports and send it to the client
   list() {
     let self = this;
 
-    sp.list().then((ports) => {
+    SP.list().then((ports) => {
       let portNames = [];
       ports.forEach(function (port) {
         portNames.push(port.path);
         console.log(port.path);
       });
-      self.sendit({ method: 'list', data: portNames });
+      self.sendit({ method: "list", data: portNames });
     });
   }
 
@@ -39,7 +39,7 @@ class Client {
   openSerial(port) {
     this.serialPortsList.push(port.serialPortName);
     this.serialPorts.push(port);
-    console.log('open');
+    console.log("open");
   }
 
   // write received data to subscribed serial ports
@@ -75,7 +75,7 @@ class Client {
     try {
       this.ws.send(dataToSend);
     } catch (error) {
-      console.log('Error sending: ', error);
+      console.log("Error sending: ", error);
     }
   }
 }

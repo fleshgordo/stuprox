@@ -1,7 +1,7 @@
 // SerialPort class that gets created when new serial port is opened.
 // Maintains list of connected Client objects to forward data received from the serial port.
 
-let sp = require('serialport');
+const { SerialPort: SP } = require("serialport");
 
 // represents a serialport object. Maintains an array of Client objects
 // subscribed to the serial port. see https://www.npmjs.com/package/serialport
@@ -57,69 +57,75 @@ class SerialPort {
   openSerial() {
     let self = this;
 
-    if (!self.serialOptions.hasOwnProperty('autoOpen')) {
-      self.serialOptions.autoOpen = false;
+    // SerialPort v9+ API - path is required
+    if (!self.serialPortName) {
+      console.error("Serial port path is required");
+      return;
     }
 
-    self.serialPort = new sp(
-      self.serialPortName,
-      self.serialOptions,
-      function (err) {
-        if (err) {
-          console.log(err);
-          self.onMessage({ method: 'error', data: err });
-        }
-      },
-    );
+    // Create serialport with path and options
+    self.serialPort = new SP({
+      path: self.serialPortName,
+      ...self.serialOptions,
+    });
 
-    self.serialPort.on('data', function (incoming) {
+    // Handle open event
+    self.serialPort.on("open", function () {
+      self.logit(`Serial port ${self.serialPortName} opened successfully`);
+      self.onMessage({ method: "open", data: self.serialPortName });
+    });
+
+    // Handle error event
+    self.serialPort.on("error", function (err) {
+      console.log("Serial port error:", err);
+      self.onMessage({ method: "error", data: err.message || err });
+    });
+
+    self.serialPort.on("data", function (incoming) {
       for (let i = 0; i < incoming.length; i++) {
-        self.onMessage({ method: 'data', data: incoming[i] });
+        self.onMessage({ method: "data", data: incoming[i] });
       }
     });
 
-    self.serialPort.on('close', function (data) {
-      self.logit('serialPort.on close');
-      self.onMessage({ method: 'close', data: data });
+    self.serialPort.on("close", function (data) {
+      self.logit("serialPort.on close");
+      self.onMessage({ method: "close", data: data });
 
       for (let i = 0; i < self.messageListeners.length; i++) {
-        let serialIndex = self.messageListeners[
-          i
-        ].serialPortsList.indexOf(self.serialPortName);
+        let serialIndex = self.messageListeners[i].serialPortsList.indexOf(
+          self.serialPortName,
+        );
 
         console.log(
-          'need to take out ' +
+          "need to take out " +
             self.serialPortName +
-            ' from client at index ' +
+            " from client at index " +
             serialIndex,
         );
 
         self.messageListeners[i].serialPorts.splice(serialIndex, 1);
-        self.messageListeners[i].serialPortsList.splice(
-          serialIndex,
-          1,
-        );
+        self.messageListeners[i].serialPortsList.splice(serialIndex, 1);
       }
 
       self.closeSerial();
     });
 
-    self.serialPort.on('error', function (data) {
-      self.logit('serialPort.on error ' + data, true);
-      self.onMessage({ method: 'error', data: data });
+    self.serialPort.on("error", function (data) {
+      self.logit("serialPort.on error " + data, true);
+      self.onMessage({ method: "error", data: data });
     });
 
     self.serialPort.open(function (err) {
-      self.logit('serialPort.open');
+      self.logit("serialPort.open");
 
       if (err) {
         console.log(err);
         self.onMessage({
-          method: 'error',
+          method: "error",
           data: "Couldn't open port: " + this.serialport,
         });
       } else {
-        self.onMessage({ method: 'openserial', data: {} });
+        self.onMessage({ method: "openserial", data: {} });
       }
     });
   }
@@ -134,23 +140,23 @@ class SerialPort {
 
     if (
       self.serialPort != null &&
-      typeof self.serialPort === 'object' &&
+      typeof self.serialPort === "object" &&
       self.serialPort.isOpen
     ) {
-      self.logit('serialPort != null && serialPort.isOpen so close');
-      self.logit('serialPort.flush, drain, close');
+      self.logit("serialPort != null && serialPort.isOpen so close");
+      self.logit("serialPort.flush, drain, close");
 
       self.serialPort.flush();
       self.serialPort.drain();
       self.serialPort.close(function (error) {
         if (error) {
-          self.onMessage({ method: 'error', data: error });
+          self.onMessage({ method: "error", data: error });
           console.log(error);
         }
       });
 
       self.onMessage({
-        method: 'close',
+        method: "close",
         data: `${self.serialPort} is closed`,
       });
 
@@ -163,7 +169,7 @@ class SerialPort {
     //     self.serialPort = null;
     // }
 
-    self.logit('serialPort closed');
+    self.logit("serialPort closed");
   }
 
   // console.log log messages when LOGGING == true

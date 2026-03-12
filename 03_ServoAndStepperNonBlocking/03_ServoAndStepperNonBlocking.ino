@@ -71,11 +71,11 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Booting Plotter ... Fasten your seatbelts! ");
   Serial.println("");
-  Serial.println(" ____ _____ _   _ ____  ____   ___   __  __");
-  Serial.println("/ ___|_   _| | | |  _ \\|  _ \\ / _ \\  \\ \\/ /");
-  Serial.println("\\___ \\ | | | | | | |_) | |_) | | | |  \\  /");
-  Serial.println(" ___) || | | |_| |  __/|  _ <| |_| |  /  \\");
-  Serial.println("|____/ |_|  \\___/|_|   |_| \\_\\\\___/  /_/\\_\\");
+  Serial.println(" ____ _____ _   _ ______  __");
+  Serial.println("/ ___|_   _| | | |  _ \\ \\/ /");
+  Serial.println("\\___ \\ | | | | | | |_) \\  /");
+  Serial.println(" ___) || | | |_| |  __//  \\");
+  Serial.println("|____/ |_|  \\___/|_|  /_/\\_\\");
   Serial.println("");
 
   // Pass some config to the instances and begin

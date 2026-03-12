@@ -2,7 +2,7 @@ import { SerialPort } from 'serialport';
 import { ReadlineParser } from '@serialport/parser-readline';
 
 const config = {
-  path: '/dev/tty.usbmodem101',
+  path: '/dev/tty.usbmodem2101',
   baudRate: 115200,
   autoOpen: false,
 };
