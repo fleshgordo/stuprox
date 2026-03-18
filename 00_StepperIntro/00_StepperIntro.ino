@@ -1,5 +1,5 @@
 /*
-   Simple demo with DRV8255 driver on CNC shield
+   Simple demo with A4498 driver on CNC shield
 
    Connect STEP, DIR as indicated!
    Driverslots X, Y, Z, A on the CNC shield can be used
@@ -23,7 +23,7 @@
 // Since microstepping is set externally, make sure this matches the selected mode
 // Set the jumper to middle position when using MICROSTEPS 4, no jumper = MICROSTEPS 1
 // 1=full step, 2=half step etc.
-#define MICROSTEPS 4
+#define MICROSTEPS 4  
 
 // Driver in CNC shield X
 #define DIR_X 5
@@ -49,17 +49,18 @@
 
 // Initialize the driver(s)
 BasicStepperDriver stepper(MOTOR_STEPS, DIR_Y, STEP_Y, SLEEP);
+BasicStepperDriver stepperX(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
 
 void setup()
 {
   // Pass some config to the instances and begin
   stepper.begin(RPM, MICROSTEPS);
-
+  stepperX.begin(RPM, MICROSTEPS);
   // set speed profile with acceleration
   // stepper.setSpeedProfile(stepper.LINEAR_SPEED, 500, 500);
 
   // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
-  stepper.setEnableActiveState(LOW);
+  stepperX.setEnableActiveState(LOW);
 }
 
 void loop()
@@ -68,7 +69,7 @@ void loop()
   stepper.enable();
 
   // Moving motor one full revolution using the degree notation
-  stepper.rotate(360);
+  stepper.rotate(-360);
 
   // pause and allow the motor to be moved by hand
   stepper.disable();

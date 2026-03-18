@@ -15,7 +15,7 @@
     Servo Data pin (orange or yellow) -> SpinEn on CNC shield (D12)
     Servo GND -> GND on CNC Shield
 
-    Stepper in Slot X (Pin 5 & 2)
+    Stepper in Slot Z (Pin 7 & 4)
 */
 
 
@@ -40,7 +40,7 @@
 #define DIR_Y 6
 #define STEP_Y 3
 
-// Driver in CNC shield Z
+// Driver in CNC shield Y
 #define DIR_Z 7
 #define STEP_Z 4
 
@@ -48,6 +48,20 @@
 #define SLEEP 8
 
 Servo servo;
+
+const byte servoPin = 12;  // connect to Spindle enable pin (SpinEn) on CNC shield.
+int pos = 90;
+float speed = .1;
+
+const int servo_min_ms = 800;
+const int servo_max_ms = 2100;
+
+const int servo_min_pos = 55;
+const int servo_max_pos = 135;
+const int servo_range = servo_max_pos - servo_min_pos;
+
+const float full_rotation_L = MOTOR_STEPS * MICROSTEPS * 14;
+const int step_size = 360;
 
 // Initialize the driver(s)
 BasicStepperDriver stepper(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
@@ -57,11 +71,11 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Booting Plotter ... Fasten your seatbelts! ");
   Serial.println("");
-  Serial.println(" ____ _____ _   _ ______  __");
-  Serial.println("/ ___|_   _| | | |  _ \\ \\/ /");
-  Serial.println("\\___ \\ | | | | | | |_) \\  /");
-  Serial.println(" ___) || | | |_| |  __//  \\");
-  Serial.println("|____/ |_|  \\___/|_|  /_/\\_\\");
+  Serial.println(" ____ _____ _   _ ____  ____   ___   __  __");
+  Serial.println("/ ___|_   _| | | |  _ \\|  _ \\ / _ \\  \\ \\/ /");
+  Serial.println("\\___ \\ | | | | | | |_) | |_) | | | |  \\  /");
+  Serial.println(" ___) || | | |_| |  __/|  _ <| |_| |  /  \\");
+  Serial.println("|____/ |_|  \\___/|_|   |_| \\_\\\\___/  /_/\\_\\");
   Serial.println("");
 
   // Pass some config to the instances and begin
@@ -73,43 +87,41 @@ void setup() {
   // attach the servo
   servo.attach(servoPin);
   // energize coils
-  stepper.enable();
+
 
   servo.write(pos);
+
+  Serial.println(pos);
+
+
+  Serial.println("Drawing finished. ");
 }
 
-int stepperRotation = MOTOR_STEPS * MICROSTEPS * 2; // motor steps to make the platform rotate one time
+int final_pos = MOTOR_STEPS * MICROSTEPS * 5;
 bool toggle_pen = false;
 
-const int minPosition = 60;  // Minimum servo position
-const int maxPosition = 120; // Maximum servo position
-const int stepSize = 1;      // Step size for increment/decrement
-
-int currentPosition = 90;    // Initial servo position
-int stepDirection = 1;       // Initial step direction (1 for increment, -1 for decrement)
-
 void loop() {
+  while (final_pos > 100) {
+    stepper.enable();
+    stepper.startMove(final_pos);
 
-  stepper.enable();
-  stepper.startMove(stepperRotation);
-
-  unsigned wait_time_micros = 1;
-  while (wait_time_micros > 0) {
-    wait_time_micros = stepper.nextAction();
-    int remaining = stepper.getStepsRemaining();
-    
-    // Update servo position
-    servo.write(currentPosition);
-
-    // Increment or decrement current position based on step direction
-    currentPosition += stepDirection * stepSize;
-
-    // Change step direction if limits are reached
-    if (currentPosition >= maxPosition || currentPosition <= minPosition) {
-      stepDirection = -stepDirection;
+    final_pos -= 100;
+    unsigned wait_time_micros = 1;
+    while (wait_time_micros > 0) {
+      wait_time_micros = stepper.nextAction();
+      int remaining = stepper.getStepsRemaining();
+      //int new_pos = servo_max_pos - (servo_max_pos / (MOTOR_STEPS * MICROSTEPS) * remaining);
+      int new_pos = 0;
+      if (toggle_pen) {
+        new_pos = servo_max_pos - ((float(servo_range) / final_pos) * remaining);
+      } else {
+         new_pos = servo_min_pos - ((float(servo_range) / final_pos) * -1 *remaining) ;
+      }
+      servo.write(new_pos);
+      //Serial.println(new_pos);
     }
-    //Serial.println(new_pos);
+    delay(500);
+    toggle_pen = !toggle_pen;
+    stepper.disable();
   }
-  delay(500);
-  stepper.disable();
 }

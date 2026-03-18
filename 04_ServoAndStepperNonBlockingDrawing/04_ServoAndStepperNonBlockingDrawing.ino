@@ -73,6 +73,7 @@ unsigned long lastServoUpdate = 0;
 void updateRandomServo()
 {
   unsigned long now = millis();
+  // Limit servo updates so motion stays smooth without blocking loop().
   if (now - lastServoUpdate < SERVO_UPDATE_MS)
   {
     return;
@@ -141,18 +142,22 @@ void setup()
 
 void loop()
 {
+  // Keep servo animation running continuously, independent of XY movement.
   updateRandomServo();
 
   if (!moveActive)
   {
+    // Start the next segment and advance index for the following move.
     startMoveToPoint(pathIndex);
     pathIndex = (pathIndex + 1) % PATH_LEN;
     return;
   }
 
+  // Trigger the next non-blocking step action on each axis.
   waitTimeX = stepperX.nextAction();
   waitTimeY = stepperY.nextAction();
 
+  // When both axes report done, latch current position and arm next segment.
   if (waitTimeX == 0 && waitTimeY == 0)
   {
     currentX = targetX;

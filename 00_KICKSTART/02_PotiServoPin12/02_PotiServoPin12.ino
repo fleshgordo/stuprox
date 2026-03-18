@@ -37,7 +37,7 @@ void setup()
 void loop()
 {
   int raw = analogRead(POT_PIN);        // read potentiometer value (ADC)
-  int angle = map(raw, 0, 692, 0, 180); // scale ADC range to servo angle
+  int angle = map(raw, 0, 1024, 90, 180); // scale ADC range to servo angle
   angle = constrain(angle, 0, 180);     // keep angle within valid limits
 
   servo.write(angle);
@@ -46,9 +46,9 @@ void loop()
   if (now - lastPrintMs >= PRINT_INTERVAL_MS)
   {
     lastPrintMs = now;
-    Serial.print("POT raw: ");
+    Serial.print("raw:");
     Serial.print(raw);
-    Serial.print(" | Servo angle: ");
+    Serial.print(",angle:");
     Serial.println(angle);
   }
 }
