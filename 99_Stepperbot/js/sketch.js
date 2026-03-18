@@ -32,8 +32,8 @@ const PEN_OFFSET = 15; // mm - pen tip offset mounted on link arm 2 beyond the j
 
 // Motor angle limits for IK, in degrees
 const MOTOR_1_MIN_ANGLE_DEG = 0;
-const MOTOR_1_MAX_ANGLE_DEG = 235;
-const MOTOR_2_MIN_ANGLE_DEG = -45;
+const MOTOR_1_MAX_ANGLE_DEG = 205;
+const MOTOR_2_MIN_ANGLE_DEG = -15;
 const MOTOR_2_MAX_ANGLE_DEG = 180;
 
 // Workspace reach margins
@@ -61,7 +61,7 @@ const MOTOR1_X = 200; // Canvas position of left motor
 const MOTOR1_Y = 100; // Canvas position baseline
 
 // Serial Configuration
-const SERIAL_PORT = "/dev/cu.usbserial-1140";
+const SERIAL_PORT = "/dev/cu.usbserial-1120";
 const BAUD_RATE = 9600;
 const STARTUP_HOME_CMD_X = -90;
 const STARTUP_HOME_CMD_Y = 0;
@@ -92,8 +92,8 @@ let homePos; // Home position
 let arduinoBusy = false; // Is Arduino currently executing a command?
 let commandQueue = []; // Queue of pending commands
 let lastCommandTime = 0; // Timestamp of last command sent
-const MIN_COMMAND_INTERVAL = 1; // Minimum ms between commands
-const MAX_COMMAND_QUEUE = 10;
+const MIN_COMMAND_INTERVAL = 100; // Minimum ms between commands
+const MAX_COMMAND_QUEUE = 5;
 const ARDUINO_BUSY_TIMEOUT_MS = 150;
 const IK_ANGLE_EPSILON = (2 * Math.PI) / 180; // Hysteresis near angle limits to avoid branch flips
 
@@ -372,7 +372,6 @@ function drawReachabilityDebugOverlay() {
       debugStartupPenPoint.y + 6,
     );
   }
-
 }
 
 function formatIKDebugEntry(label, point, reachable, reason) {

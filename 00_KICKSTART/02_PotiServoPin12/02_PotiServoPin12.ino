@@ -31,7 +31,7 @@ void setup() {
 
 void loop() {
   int raw = analogRead(POT_PIN);
-  int angle = map(raw, 0, 1023, 0, 180);
+  int angle = map(raw, 0, 692, 0, 180);
   angle = constrain(angle, 0, 180);
 
   servo.write(angle);

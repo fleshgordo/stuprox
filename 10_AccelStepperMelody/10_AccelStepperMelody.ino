@@ -1,123 +1,259 @@
 /*
-   This sketch controls two stepper motors in such a way that their coils should
-   play a melody 
-   More info on the library are here: https://www.airspayce.com/mikem/arduino/AccelStepper/
+    10_AccelStepperMelody.ino
 
-   Connect STEP, DIR as indicated!
-   Driverslots X and Y on the CNC shield are used
-
-   Written by Gordan Savicic 2023
-
-   This file may be redistributed under the terms of the MIT license.
-   A copy of this license has been included with this distribution in the file LICENSE.
-
-  Stepper in Slot X (Pin 5 & 2) and Y (Pin 6 & 3)
+  Plays a melody on both CNC shield steppers (X + Y) using AccelStepper.
+  - X slot: STEP 2, DIR 5
+  - Y slot: STEP 3, DIR 6
+  - Shared ENABLE: 8 (active LOW on common CNC shields)
 */
-
 
 #include <AccelStepper.h>
 
-// Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
-#define MOTOR_STEPS 200
-#define RPM 60
+const uint8_t STEP_X_PIN = 2;
+const uint8_t DIR_X_PIN = 5;
+const uint8_t STEP_Y_PIN = 3;
+const uint8_t DIR_Y_PIN = 6;
+const uint8_t ENABLE_PIN = 8;
 
-// Since microstepping is set externally, make sure this matches the selected mode
-// Set the jumper to middle position when using MICROSTEPS 4, no jumper = MICROSTEPS 1
-// 1=full step, 2=half step etc.
-#define MICROSTEPS 4
+AccelStepper stepperX(AccelStepper::DRIVER, STEP_X_PIN, DIR_X_PIN);
+AccelStepper stepperY(AccelStepper::DRIVER, STEP_Y_PIN, DIR_Y_PIN);
 
-// Driver in CNC shield X
-#define DIR_X 5
-#define STEP_X 2
-
-// Driver in CNC shield Y
-#define DIR_Y 6
-#define STEP_Y 3
-
-// Driver in CNC shield Z
-#define DIR_Z 7
-#define STEP_Z 4
-
-// Define the pin for enable/disable functionality
-#define SLEEP 8
-
-// Define note frequencies
+#define NOTE_R 0
 #define NOTE_C4 262
 #define NOTE_D4 294
 #define NOTE_E4 330
-#define NOTE_F4 349
+#define NOTE_FS4 370
 #define NOTE_G4 392
 #define NOTE_A4 440
 #define NOTE_B4 494
 #define NOTE_C5 523
+#define NOTE_CS5 554
+#define NOTE_D5 587
+#define NOTE_E5 659
+#define NOTE_F5 698
+#define NOTE_FS5 740
+#define NOTE_G5 784
+#define NOTE_G3 196
 
-// Define note durations
-#define Q 4  // quarter note
-#define H 2  // half note
-#define E 1  // eighth note
+const uint16_t marioMelodyHz[] = {
+    NOTE_E5, NOTE_E5, NOTE_R, NOTE_E5,
+    NOTE_R, NOTE_C5, NOTE_E5, NOTE_R,
+    NOTE_G5, NOTE_R, NOTE_R, NOTE_R,
+    NOTE_G4, NOTE_R,
+    NOTE_C5, NOTE_R, NOTE_G4, NOTE_R,
+    NOTE_E4, NOTE_R, NOTE_A4, NOTE_B4,
+    NOTE_A4, NOTE_G4, NOTE_E5, NOTE_G5,
+    NOTE_A4, NOTE_F5, NOTE_G5, NOTE_E5,
+    NOTE_C5, NOTE_D5, NOTE_B4, NOTE_R};
 
-// Initialize stepper motor objects
-AccelStepper stepper1(AccelStepper::DRIVER, STEP_X, DIR_X);
-AccelStepper stepper2(AccelStepper::DRIVER, STEP_Y, DIR_Y);
+const uint8_t marioDurationsDiv[] = {
+    8, 8, 8, 8,
+    8, 8, 8, 8,
+    8, 8, 8, 8,
+    8, 8,
+    8, 8, 8, 8,
+    8, 8, 8, 8,
+    8, 8, 8, 8,
+    8, 8, 8, 8,
+    8, 8, 4, 4};
 
-// Define melody notes
-int melody[] = {
-  NOTE_C4, NOTE_C4, NOTE_G4, NOTE_G4, NOTE_A4, NOTE_A4, NOTE_G4,
-  NOTE_F4, NOTE_F4, NOTE_E4, NOTE_E4, NOTE_D4, NOTE_D4, NOTE_C4
-};
+const uint16_t preludeGMelodyHz[] = {
+    NOTE_G3, NOTE_D4, NOTE_G4, NOTE_B4,
+    NOTE_D5, NOTE_G4, NOTE_B4, NOTE_D5,
+    NOTE_G3, NOTE_D4, NOTE_G4, NOTE_B4,
+    NOTE_D5, NOTE_G4, NOTE_B4, NOTE_D5,
+    NOTE_G3, NOTE_D4, NOTE_G4, NOTE_B4,
+    NOTE_D5, NOTE_G4, NOTE_B4, NOTE_D5,
+    NOTE_C4, NOTE_G4, NOTE_C5, NOTE_E5,
+    NOTE_G4, NOTE_E5, NOTE_C5, NOTE_G4,
+    NOTE_D4, NOTE_A4, NOTE_D5, NOTE_FS5,
+    NOTE_A4, NOTE_FS5, NOTE_D5, NOTE_A4,
+    NOTE_G3, NOTE_D4, NOTE_G4, NOTE_B4,
+    NOTE_D5, NOTE_G4, NOTE_B4, NOTE_D5};
 
-// Define note durations
-int noteDurations[] = {
-  Q, Q, Q, Q, Q, Q, H,
-  Q, Q, Q, Q, Q, Q, H
-};
+const uint8_t preludeGDurationsDiv[] = {
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16,
+    16, 16, 16, 16};
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Booting Plotter ... Fasten your seatbelts! ");
-  Serial.println("");
-  Serial.println(" ____ _____ _   _ ______  __");
-  Serial.println("/ ___|_   _| | | |  _ \\ \\/ /");
-  Serial.println("\\___ \\ | | | | | | |_) \\  /");
-  Serial.println(" ___) || | | |_| |  __//  \\");
-  Serial.println("|____/ |_|  \\___/|_|  /_/\\_\\");
-  Serial.println("");
+const uint16_t *currentMelodyHz = marioMelodyHz;
+const uint8_t *currentRhythm = marioDurationsDiv;
+size_t melodyCount = sizeof(marioMelodyHz) / sizeof(marioMelodyHz[0]);
+const char *currentMelodyName = "Mario";
 
+const uint16_t BASE_BEAT_MS = 600;
+const uint8_t NOTE_ON_PERCENT = 85;
 
-  // initialize speed, acceleration and enable pin
-  stepper1.setMaxSpeed(1000);
-  stepper1.setAcceleration(500);
-  stepper1.setEnablePin(8);
-  stepper1.enableOutputs();
-  
-  stepper2.setMaxSpeed(1000);
-  stepper2.setAcceleration(500);
-  stepper2.setEnablePin(8);
-  stepper2.enableOutputs();
+size_t noteIndex = 0;
+bool noteIsOn = false;
+bool melodyEnabled = true;
+unsigned long notePhaseStartMs = 0;
+unsigned long noteOnDurationMs = 0;
+unsigned long noteTotalDurationMs = 0;
+
+void startNote(size_t idx);
+
+void enableDrivers()
+{
+    digitalWrite(ENABLE_PIN, LOW);
+    melodyEnabled = true;
+    Serial.println("Drivers ENABLED");
 }
 
-void loop() {
-  // Play melody on stepper motors
-  for (int i = 0; i < sizeof(melody) / sizeof(melody[0]); i++) {
-    // Calculate duration of note
-    int duration = 1000 / noteDurations[i];
+void disableDrivers()
+{
+    digitalWrite(ENABLE_PIN, HIGH);
+    melodyEnabled = false;
+    stepperX.setSpeed(0);
+    stepperY.setSpeed(0);
+    Serial.println("Drivers DISABLED");
+}
 
-    // Play note on stepper1
-    stepper1.setSpeed(melody[i]);
-    stepper1.runSpeed();
-    delay(duration / 2);
-    stepper1.setSpeed(0);
-    stepper1.runSpeed();
+void setupSteppers()
+{
+    stepperX.setMaxSpeed(2500);
+    stepperY.setMaxSpeed(2500);
+    stepperX.setAcceleration(2000);
+    stepperY.setAcceleration(2000);
+}
 
-    // Play note on stepper2
-    stepper2.setSpeed(melody[i]);
-    stepper2.runSpeed();
-    delay(duration / 2);
-    stepper2.setSpeed(0);
-    stepper2.runSpeed();
+void selectMelody(
+    const uint16_t *melody,
+    const uint8_t *rhythm,
+    size_t count,
+    const char *name)
+{
+    currentMelodyHz = melody;
+    currentRhythm = rhythm;
+    melodyCount = count;
+    currentMelodyName = name;
+    noteIndex = 0;
+    startNote(noteIndex);
 
-    // Delay between notes
-    delay(duration / 2);
-    Serial.println(duration);
-  }
+    Serial.print("Melody -> ");
+    Serial.println(currentMelodyName);
+}
+
+void startNote(size_t idx)
+{
+    uint16_t frequency = currentMelodyHz[idx];
+    uint8_t rhythmValue = currentRhythm[idx];
+    if (rhythmValue == 0)
+        rhythmValue = 1;
+
+    noteTotalDurationMs = BASE_BEAT_MS * 4UL / rhythmValue;
+
+    noteOnDurationMs = (noteTotalDurationMs * NOTE_ON_PERCENT) / 100;
+    notePhaseStartMs = millis();
+    noteIsOn = true;
+
+    if (frequency == NOTE_R)
+    {
+        stepperX.setSpeed(0);
+        stepperY.setSpeed(0);
+    }
+    else
+    {
+        stepperX.setSpeed(frequency);
+        stepperY.setSpeed(-frequency * 0.5f);
+    }
+
+    Serial.print("Note[");
+    Serial.print(idx);
+    Serial.print("] f=");
+    Serial.print(frequency);
+    Serial.print("Hz dur=");
+    Serial.print(noteTotalDurationMs);
+    Serial.print("ms theme=");
+    Serial.println(currentMelodyName);
+}
+
+void setup()
+{
+    Serial.begin(115200);
+
+    Serial.println("");
+    Serial.println(" ____ _____ _   _ ______  __");
+    Serial.println("/ ___|_   _| | | |  _ \\ \\/ /");
+    Serial.println("\\___ \\ | | | | | | |_) \\  /");
+    Serial.println(" ___) || | | |_| |  __//  \\");
+    Serial.println("|____/ |_|  \\___/|_|  /_/\\_\\");
+    Serial.println("");
+
+    pinMode(ENABLE_PIN, OUTPUT);
+    setupSteppers();
+    enableDrivers();
+
+    Serial.println("=== AccelStepper Melody XY ===");
+    Serial.println("Commands: E(enable), D(disable), N(next note), M(Mario), B(PreludeG)");
+
+    startNote(noteIndex);
+}
+
+void loop()
+{
+    if (Serial.available())
+    {
+        char c = toupper(Serial.read());
+        if (c == 'E')
+        {
+            enableDrivers();
+            startNote(noteIndex);
+        }
+        else if (c == 'D')
+        {
+            disableDrivers();
+        }
+        else if (c == 'N')
+        {
+            noteIndex = (noteIndex + 1) % melodyCount;
+            startNote(noteIndex);
+        }
+        else if (c == 'M')
+        {
+            selectMelody(
+                marioMelodyHz,
+                marioDurationsDiv,
+                sizeof(marioMelodyHz) / sizeof(marioMelodyHz[0]),
+                "Mario");
+        }
+        else if (c == 'B')
+        {
+            selectMelody(
+                preludeGMelodyHz,
+                preludeGDurationsDiv,
+                sizeof(preludeGMelodyHz) / sizeof(preludeGMelodyHz[0]),
+                "PreludeG");
+        }
+    }
+
+    if (!melodyEnabled)
+        return;
+
+    unsigned long now = millis();
+
+    if (noteIsOn && (now - notePhaseStartMs >= noteOnDurationMs))
+    {
+        stepperX.setSpeed(0);
+        stepperY.setSpeed(0);
+        noteIsOn = false;
+    }
+
+    if (now - notePhaseStartMs >= noteTotalDurationMs)
+    {
+        noteIndex = (noteIndex + 1) % melodyCount;
+        startNote(noteIndex);
+    }
+
+    stepperX.runSpeed();
+    stepperY.runSpeed();
 }

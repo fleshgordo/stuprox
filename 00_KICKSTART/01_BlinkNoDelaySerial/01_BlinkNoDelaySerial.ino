@@ -16,10 +16,6 @@ void setup()
     digitalWrite(LED_PIN, LOW);
 
     Serial.begin(115200);
-    while (!Serial)
-    {
-        ;
-    }
     Serial.println("");
     Serial.println(" ____ _____ _   _ ______  __");
     Serial.println("/ ___|_   _| | | |  _ \\ \\/ /");

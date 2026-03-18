@@ -36,6 +36,8 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
   
 ## Examples
 
+ - #### [00_KICKSTART](./00_KICKSTART/)
+    Quick Arduino onboarding set with 3 mini sketches: non-blocking blink + serial, poti-to-servo control, and LDR-to-servo with calibration challenge.
  - #### [00_StepperIntro.ino](00_StepperIntro/)
     Move a stepper motor. Basic example
  - #### [01_ServoIntro.ino](01_ServoIntro/)
@@ -55,7 +57,9 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
 - #### [08_Servobot.ino](./08_Servobot/)
     Using two servo arms to create a mini-rapid-prototyped-drawmatic-postographo-plotter. It communicates with the computer through serial communication, directly interfacing with a p5js sketch that uses inverse kinematics to calculate angles.
 - #### [09_AccelStepper.ino](./09_AccelStepper/)
-    AccelStepper library has much better support for acceleration and speed settings than BasicStepper. Read the [documentation](https://www.airspayce.com/mikem/arduino/AccelStepper/) and the [missing guide](https://hackaday.io/project/183279-accelstepper-the-missing-manual/details) for detailed explanations.
+   Short AccelStepper starter: non-blocking motion control with clearer acceleration/speed behavior than BasicStepper; ideal as first step for smoother XY movement.
+- #### [10_AccelStepperMelody.ino](./10_AccelStepperMelody/)
+   Music example: drives stepper frequencies as notes to play simple melodies and demonstrate timing/rhythm control with motor sound.
 
 # Hardware Requirements
   - Arduino UNO

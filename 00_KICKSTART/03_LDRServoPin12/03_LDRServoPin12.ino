@@ -18,17 +18,15 @@ const unsigned long PRINT_INTERVAL_MS = 100;
 Servo servo;
 unsigned long lastPrintMs = 0;
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
-  while (!Serial) {
-    ;
-  }
-
   servo.attach(SERVO_PIN);
   Serial.println("KICKSTART 03: LDR + Servo an Pin 12");
 }
 
-void loop() {
+void loop()
+{
   int raw = analogRead(LDR_PIN);
 
   // Je nach Aufbau ggf. invertieren: map(raw, 0, 1023, 180, 0)
@@ -38,7 +36,8 @@ void loop() {
   servo.write(angle);
 
   unsigned long now = millis();
-  if (now - lastPrintMs >= PRINT_INTERVAL_MS) {
+  if (now - lastPrintMs >= PRINT_INTERVAL_MS)
+  {
     lastPrintMs = now;
     Serial.print("LDR raw: ");
     Serial.print(raw);
