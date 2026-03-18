@@ -37,18 +37,31 @@ void setup()
 
 void loop()
 {
-    unsigned long currentMillis = millis();
+    unsigned long now = millis(); // current time snapshot for this loop pass
 
-    if (currentMillis - previousMillis >= BLINK_INTERVAL_MS)
+    if (now - previousMillis >= BLINK_INTERVAL_MS) // non-blocking timer check
     {
-        previousMillis = currentMillis;
-        ledState = !ledState;
+        previousMillis = now; // remember last toggle time
+        ledState = !ledState; // flip LED state
 
-        digitalWrite(LED_PIN, ledState ? HIGH : LOW);
+        digitalWrite(LED_PIN, ledState ? HIGH : LOW); // ternary: if ledState then HIGH else LOW
 
         Serial.print("LED: ");
-        Serial.print(ledState ? "ON" : "OFF");
+        Serial.print(ledState ? "ON" : "OFF"); // same pattern: true -> "ON", false -> "OFF"
         Serial.print(" | millis: ");
-        Serial.println(currentMillis);
+        Serial.println(now);
     }
 }
+
+/*
+Ternary ist die kompakte Form von if/else:
+
+bedingung ? wertWennTrue : wertWennFalse
+
+Alternative Form (if/else):
+if (ledState == HIGH) {
+  digitalWrite(LED_PIN, HIGH);
+} else {
+  digitalWrite(LED_PIN, LOW);
+}
+*/

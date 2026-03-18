@@ -11,8 +11,8 @@
 
 #include <Servo.h>
 
-const uint8_t LDR_PIN = A0;
-const uint8_t SERVO_PIN = 12;
+const int LDR_PIN = A0;
+const int SERVO_PIN = 12;
 const unsigned long PRINT_INTERVAL_MS = 100;
 
 Servo servo;
