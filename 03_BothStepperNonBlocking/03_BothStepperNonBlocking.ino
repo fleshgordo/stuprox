@@ -35,7 +35,9 @@
 BasicStepperDriver stepperX(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
 BasicStepperDriver stepperY(MOTOR_STEPS, DIR_Y, STEP_Y, SLEEP);
 
-const long TURN_STEPS = MOTOR_STEPS * MICROSTEPS;
+const long TURN_STEPS_MIN = (MOTOR_STEPS * MICROSTEPS) / 2;
+const long TURN_STEPS_MAX = (MOTOR_STEPS * MICROSTEPS) * 3;
+long TURN_STEPS = MOTOR_STEPS * MICROSTEPS;
 bool movingForward = true;
 
 void setup()
@@ -54,6 +56,8 @@ void setup()
 
   stepperX.enable();
   stepperY.enable();
+
+  randomSeed(analogRead(A0));
 
   // Start with a forward move on both axes.
   // From here on, loop() keeps both axes synchronized and non-blocking.
@@ -74,6 +78,8 @@ void loop()
   {
     // Flip direction after both motors complete the current segment.
     movingForward = !movingForward;
+    // Pick a new move length for the next segment.
+    TURN_STEPS = random(TURN_STEPS_MIN, TURN_STEPS_MAX + 1);
     // Positive = forward, negative = backward.
     long nextMove = movingForward ? TURN_STEPS : -TURN_STEPS;
 
@@ -83,6 +89,8 @@ void loop()
 
     // Print current direction for quick debugging in Serial Monitor.
     Serial.print("Direction: ");
-    Serial.println(movingForward ? "FORWARD" : "BACKWARD");
+    Serial.print(movingForward ? "FORWARD" : "BACKWARD");
+    Serial.print(" | Steps: ");
+    Serial.println(TURN_STEPS);
   }
 }

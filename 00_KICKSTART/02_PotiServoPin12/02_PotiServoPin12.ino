@@ -36,9 +36,9 @@ void setup()
 
 void loop()
 {
-  int raw = analogRead(POT_PIN);        // read potentiometer value (ADC)
-  int angle = map(raw, 0, 1024, 90, 180); // scale ADC range to servo angle
-  angle = constrain(angle, 0, 180);     // keep angle within valid limits
+  int raw = analogRead(POT_PIN);          // read potentiometer value (ADC)
+  int angle = map(raw, 0, 1023, 90, 180); // scale ADC range to servo angle
+  angle = constrain(angle, 0, 180);       // keep angle within valid limits
 
   servo.write(angle);
 
