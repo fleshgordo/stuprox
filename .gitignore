@@ -1,2 +1,19 @@
 .DS_Store
-.vscode
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Marp outputs
+presentation.pdf
+presentation-slides.html
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp
+*.swo
+*~

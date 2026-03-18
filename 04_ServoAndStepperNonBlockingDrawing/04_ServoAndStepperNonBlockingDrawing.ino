@@ -157,7 +157,7 @@ void loop()
   waitTimeX = stepperX.nextAction();
   waitTimeY = stepperY.nextAction();
 
-  // When both axes report done, latch current position and arm next segment.
+  // When both axes report done, latch current position and prep next segment.
   if (waitTimeX == 0 && waitTimeY == 0)
   {
     currentX = targetX;
