@@ -57,23 +57,28 @@ void setup()
 
 void loop()
 {
+  // Start both axes once when loop begins.
   static bool started = false;
 
   if (!started)
   {
+    // Initial move command for X and Y.
     stepperX.startMove(TURN_STEPS);
     stepperY.startMove(TURN_STEPS);
     started = true;
   }
 
+  // Run one non-blocking step action per axis.
   unsigned waitTimeX = stepperX.nextAction();
   unsigned waitTimeY = stepperY.nextAction();
 
+  // If X finished, queue the next turn.
   if (waitTimeX == 0)
   {
     stepperX.startMove(-TURN_STEPS);
   }
 
+  // If Y finished, queue the next turn.
   if (waitTimeY == 0)
   {
     stepperY.startMove(-TURN_STEPS);
