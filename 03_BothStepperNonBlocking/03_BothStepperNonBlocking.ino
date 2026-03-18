@@ -36,6 +36,7 @@ BasicStepperDriver stepperX(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
 BasicStepperDriver stepperY(MOTOR_STEPS, DIR_Y, STEP_Y, SLEEP);
 
 const long TURN_STEPS = MOTOR_STEPS * MICROSTEPS;
+bool movingForward = true;
 
 void setup()
 {
@@ -53,34 +54,35 @@ void setup()
 
   stepperX.enable();
   stepperY.enable();
+
+  // Start with a forward move on both axes.
+  // From here on, loop() keeps both axes synchronized and non-blocking.
+  stepperX.startMove(TURN_STEPS);
+  stepperY.startMove(TURN_STEPS);
 }
 
 void loop()
 {
-  // Start both axes once when loop begins.
-  static bool started = false;
-
-  if (!started)
-  {
-    // Initial move command for X and Y.
-    stepperX.startMove(TURN_STEPS);
-    stepperY.startMove(TURN_STEPS);
-    started = true;
-  }
-
-  // Run one non-blocking step action per axis.
+  // Each call advances at most one timing slice for each motor.
+  // This keeps loop() free for other tasks and avoids blocking delays.
   unsigned waitTimeX = stepperX.nextAction();
   unsigned waitTimeY = stepperY.nextAction();
 
-  // If X finished, queue the next turn.
-  if (waitTimeX == 0)
+  // Only when BOTH axes are finished do we queue the next move.
+  // This keeps direction changes in sync: forward together, backward together.
+  if (waitTimeX == 0 && waitTimeY == 0)
   {
-    stepperX.startMove(-TURN_STEPS);
-  }
+    // Flip direction after both motors complete the current segment.
+    movingForward = !movingForward;
+    // Positive = forward, negative = backward.
+    long nextMove = movingForward ? TURN_STEPS : -TURN_STEPS;
 
-  // If Y finished, queue the next turn.
-  if (waitTimeY == 0)
-  {
-    stepperY.startMove(-TURN_STEPS);
+    // Queue the same direction change on both axes.
+    stepperX.startMove(nextMove);
+    stepperY.startMove(nextMove);
+
+    // Print current direction for quick debugging in Serial Monitor.
+    Serial.print("Direction: ");
+    Serial.println(movingForward ? "FORWARD" : "BACKWARD");
   }
 }
