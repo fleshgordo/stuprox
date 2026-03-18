@@ -1,23 +1,10 @@
 /*
-   This sketch controls a servo motor and a stepper motor blocking mode
+  Simple non-blocking drawing sketch.
 
-   Connect STEP, DIR as indicated!
-   Driverslots X and Y on the CNC shield are used
-
-   Written by Gordan Savicic 2023
-
-   This file may be redistributed under the terms of the MIT license.
-   A copy of this license has been included with this distribution in the file LICENSE.
-
-   Wiring:
-    Power supply +5v -> Servo + pin (red cable)
-    Power supply GND -> CNC Shield GND pin
-    Servo Data pin (orange or yellow) -> SpinEn on CNC shield (D12)
-    Servo GND -> GND on CNC Shield
-
-    Stepper in Slot X (Pin 5 & 2)
+  - Two steppers (X/Y) move through an array of absolute XY target coordinates.
+  - A servo on pin 12 moves with a random sine-based motion in parallel.
+  - All motion is non-blocking and runs continuously in loop().
 */
-
 
 #include <Arduino.h>
 #include "BasicStepperDriver.h"
@@ -28,7 +15,6 @@
 #define RPM 60
 
 // Since microstepping is set externally, make sure this matches the selected mode
-// Set the jumper to middle position when using MICROSTEPS 4, no jumper = MICROSTEPS 1
 // 1=full step, 2=half step etc.
 #define MICROSTEPS 4
 
@@ -40,80 +26,137 @@
 #define DIR_Y 6
 #define STEP_Y 3
 
-// Driver in CNC shield Z
-#define DIR_Z 7
-#define STEP_Z 4
-
 // Define the pin for enable/disable functionality
 #define SLEEP 8
 
+const int SERVO_PIN = 12;
+const int SERVO_MIN_POS = 65;
+const int SERVO_MAX_POS = 125;
+const int SERVO_CENTER = 95;
+const float SERVO_SPEED = 0.01;
+const unsigned long SERVO_UPDATE_MS = 5;
+
+BasicStepperDriver stepperX(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
+BasicStepperDriver stepperY(MOTOR_STEPS, DIR_Y, STEP_Y, SLEEP);
 Servo servo;
 
-const byte servo_pin = 12;  // connect to Spindle enable pin (SpinEn) on CNC shield.
+struct Point
+{
+  long x;
+  long y;
+};
 
-const int servo_min_ms = 800;
-const int servo_max_ms = 2100;
+// Keep this small and easy to modify.
+Point path[] = {
+    {0, 0},
+    {800, 0},
+    {800, 800},
+    {0, 800},
+    {0, 0},
+    {400, 400}};
 
-const int servo_min_pos = 65;
-const int servo_max_pos = 125;
-const int servo_center = 95;
-const int range = servo_max_pos - servo_min_pos;
+const int PATH_LEN = sizeof(path) / sizeof(path[0]);
 
-float angle = 0.0;
-float speed = 0.01;
-float pos = 0.0;
+long currentX = 0;
+long currentY = 0;
+long targetX = 0;
+long targetY = 0;
 
-int final_pos = MOTOR_STEPS * MICROSTEPS * 5;
-bool toggle_pen = false;
+int pathIndex = 0;
+bool moveActive = false;
+unsigned waitTimeX = 0;
+unsigned waitTimeY = 0;
 
-long randNumber;
+float servoAngle = 0.0;
+unsigned long lastServoUpdate = 0;
 
-// Initialize the driver(s)
-BasicStepperDriver stepper(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
+void updateRandomServo()
+{
+  unsigned long now = millis();
+  if (now - lastServoUpdate < SERVO_UPDATE_MS)
+  {
+    return;
+  }
+  lastServoUpdate = now;
 
-void setup() {
+  if (random(2) == 0)
+  {
+    servoAngle += SERVO_SPEED;
+  }
+  else
+  {
+    servoAngle -= SERVO_SPEED;
+  }
 
-  Serial.begin(115200);
-  Serial.println("Booting Plotter ... Fasten your seatbelts! ");
-  Serial.println("");
-  Serial.println(" ____ _____ _   _ ______  __");
-  Serial.println("/ ___|_   _| | | |  _ \\ \\/ /");
-  Serial.println("\\___ \\ | | | | | | |_) \\  /");
-  Serial.println(" ___) || | | |_| |  __//  \\");
-  Serial.println("|____/ |_|  \\___/|_|  /_/\\_\\");
-  Serial.println("");
-
-  // Pass some config to the instances and begin
-  stepper.begin(RPM, MICROSTEPS);
-
-  // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
-  stepper.setEnableActiveState(LOW);
-
-  // attach the servo
-  servo.attach(servo_pin);
-  stepper.setSpeedProfile(BasicStepperDriver::LINEAR_SPEED, 600, 600);
-  stepper.enable();
-  randomSeed(analogRead(0));
+  int servoRange = SERVO_MAX_POS - SERVO_MIN_POS;
+  int servoPos = SERVO_CENTER + int(servoRange * 0.5 * sin(servoAngle));
+  servoPos = constrain(servoPos, SERVO_MIN_POS, SERVO_MAX_POS);
+  servo.write(servoPos);
 }
 
-void loop() {
+void startMoveToPoint(int index)
+{
+  targetX = path[index].x;
+  targetY = path[index].y;
 
-  stepper.startMove(5);
-  unsigned wait_time_micros = 1;
-  while (wait_time_micros > 0) {
-    wait_time_micros = stepper.nextAction();
-    randNumber = random(2);
-    if (randNumber > .8) {
-        angle += speed;
-    }
-    else {
-      angle -= speed;
-    }
-  
+  long dx = targetX - currentX;
+  long dy = targetY - currentY;
 
-    //float new_angle = angle * cos(angle);
-    delay(1);
-    pos = servo_center + range * .5 * sin(angle);
-    servo.write(int(pos));
+  stepperX.startMove(dx);
+  stepperY.startMove(dy);
+
+  waitTimeX = 1;
+  waitTimeY = 1;
+  moveActive = true;
+
+  Serial.print("Move to point ");
+  Serial.print(index);
+  Serial.print(" -> X:");
+  Serial.print(targetX);
+  Serial.print(" Y:");
+  Serial.println(targetY);
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println("Booting simple XY stepper path...");
+
+  servo.attach(SERVO_PIN);
+  servo.write(SERVO_CENTER);
+  randomSeed(analogRead(A0));
+
+  stepperX.begin(RPM, MICROSTEPS);
+  stepperY.begin(RPM, MICROSTEPS);
+
+  stepperX.setEnableActiveState(LOW);
+  stepperY.setEnableActiveState(LOW);
+
+  stepperX.setSpeedProfile(BasicStepperDriver::LINEAR_SPEED, 600, 600);
+  stepperY.setSpeedProfile(BasicStepperDriver::LINEAR_SPEED, 600, 600);
+
+  stepperX.enable();
+  stepperY.enable();
+}
+
+void loop()
+{
+  updateRandomServo();
+
+  if (!moveActive)
+  {
+    startMoveToPoint(pathIndex);
+    pathIndex = (pathIndex + 1) % PATH_LEN;
+    return;
+  }
+
+  waitTimeX = stepperX.nextAction();
+  waitTimeY = stepperY.nextAction();
+
+  if (waitTimeX == 0 && waitTimeY == 0)
+  {
+    currentX = targetX;
+    currentY = targetY;
+    moveActive = false;
   }
 }
