@@ -15,7 +15,6 @@ Starter files for Studio Prototyping Extended. Examples are based on the [BasicS
 ## Intro 
 
    - [Video Tutorials for Motor kit Tube Switch Channel](https://tube.switch.ch/channels/Dcqw1ga3NL)
-   - [Slides Stepper Motor (download PDF in Ilias)](https://elearning.hslu.ch/ilias/goto.php?target=file_5832681_download&client_id=hslu)
  
 ## Software requirements
  

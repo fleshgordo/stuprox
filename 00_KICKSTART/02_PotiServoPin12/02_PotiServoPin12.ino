@@ -3,41 +3,48 @@
   - Potentiometer auf A0
   - Mini Servo Signal auf Pin 12
 
-  Hinweis: Beim Poti KEIN Pullup verwenden.
-  Verdrahtung als Spannungsteiler:
-  - ein Außenpin an 5V
-  - anderer Außenpin an GND
-  - Mittelpin (Wiper) an A0
+  Poti (3-pin) Anschluss:
+  Arduino         Potentiometer
+  -------         -------------
+  5V    --------> Außenpin 1
+  GND   --------> Außenpin 2
+  A0    --------> Mittelpin (Wiper)
+
+  Servo (3-wire) Anschluss:
+  Arduino         Servo
+  -------         -----
+  5V    --------> VCC (rot)
+  GND   --------> GND (braun/schwarz)
+  D12   --------> SIG (orange/gelb)
 */
 
 #include <Servo.h>
 
-const uint8_t POT_PIN = A0;
-const uint8_t SERVO_PIN = 12;
+const int POT_PIN = A0;
+const int SERVO_PIN = 12;
 const unsigned long PRINT_INTERVAL_MS = 100;
 
 Servo servo;
 unsigned long lastPrintMs = 0;
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
-  while (!Serial) {
-    ;
-  }
-
   servo.attach(SERVO_PIN);
   Serial.println("KICKSTART 02: Poti + Servo an Pin 12");
 }
 
-void loop() {
-  int raw = analogRead(POT_PIN);
-  int angle = map(raw, 0, 692, 0, 180);
-  angle = constrain(angle, 0, 180);
+void loop()
+{
+  int raw = analogRead(POT_PIN);        // read potentiometer value (ADC)
+  int angle = map(raw, 0, 692, 0, 180); // scale ADC range to servo angle
+  angle = constrain(angle, 0, 180);     // keep angle within valid limits
 
   servo.write(angle);
 
   unsigned long now = millis();
-  if (now - lastPrintMs >= PRINT_INTERVAL_MS) {
+  if (now - lastPrintMs >= PRINT_INTERVAL_MS)
+  {
     lastPrintMs = now;
     Serial.print("POT raw: ");
     Serial.print(raw);

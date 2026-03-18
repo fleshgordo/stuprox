@@ -32,7 +32,6 @@ Hinweis: Beim Potentiometer **kein Pullup** verwenden.
 Challenge:
 - Begrenze die Servo-Auslenkung auf 0..90° statt 0..180°.
 - Prüfe, ob eine `map()`-Funktion sinnvoll ist (ja: für saubere Skalierung von 0..1023 auf 0..90).
-- Beobachte, ob der Servo an den Enden sauber stoppt.
 
 Advanced Challenge:
 - Baue eine kleine Deadzone ein (z. B. Winkel nur ändern, wenn Differenz >= 2°), damit der Servo weniger zittert.
@@ -58,4 +57,4 @@ Wichtig:
 - Ref Link: https://learn.sparkfun.com/tutorials/voltage-dividers/all
 
 Advanced Challenge:
-- Ergänze eine Auto-Kalibrierung für 5 Sekunden beim Start: min/max sammeln und danach dynamisch auf den Servowinkel mappen.
+- Ergänze eine Auto-Kalibrierung für 5 Sekunden beim Start: min/max für 5sec. beobachten und danach dynamisch auf den Servowinkel mappen.
