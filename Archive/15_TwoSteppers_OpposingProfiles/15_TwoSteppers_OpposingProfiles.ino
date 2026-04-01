@@ -34,8 +34,8 @@
 AccelStepper stepperX(AccelStepper::DRIVER, STEP_X, DIR_X);
 AccelStepper stepperY(AccelStepper::DRIVER, STEP_Y, DIR_Y);
 
-float fastSpeed = 500.0f; // steps per second
-float slowSpeed = 100.0f; // steps per second
+float fastSpeed = 800.0f; // steps per second
+float slowSpeed = 50.0f; // steps per second
 float minSpeed = 10.0f;
 float maxSpeed = 2000.0f;
 
@@ -43,7 +43,7 @@ bool usePots = false;
 bool fastOnX = true; // profile state: true => X fast / Y slow
 int xDirSign = 1;    // 1 = forward, -1 = reverse
 int yDirSign = -1;   // default opposite to X
-unsigned long swapIntervalMs = 5000;
+unsigned long swapIntervalMs = 10000;
 unsigned long lastSwapMs = 0;
 unsigned long lastStatusMs = 0;
 const unsigned long STATUS_MS = 1000;
