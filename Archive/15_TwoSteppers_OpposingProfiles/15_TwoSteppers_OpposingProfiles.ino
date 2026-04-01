@@ -16,7 +16,7 @@
   - ENABLE=8 (active LOW)
 
   Potentiometer:
-  - A0 controls RANGE between fast and slow speeds
+  - A0 controls RANGE between fast and slow speeds (A0 connected to pin Abort on CNC shield)
   - Mid speed stays based on your serial values
 */
 
