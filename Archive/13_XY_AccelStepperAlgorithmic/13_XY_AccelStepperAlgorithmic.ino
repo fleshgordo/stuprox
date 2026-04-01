@@ -28,6 +28,7 @@
 #define DIR_Y 6
 #define STEP_Y 3
 #define ENABLE_PIN 8
+#define STOP_SWITCH_PIN 12
 
 AccelStepper stepperX(AccelStepper::DRIVER, STEP_X, DIR_X);
 AccelStepper stepperY(AccelStepper::DRIVER, STEP_Y, DIR_Y);
@@ -60,6 +61,7 @@ const uint32_t STATUS_PRINT_MS = 1000;
 
 uint32_t lastStatusMs = 0;
 uint32_t lastSineUpdateMs = 0;
+bool stopSwitchLatched = false;
 
 const char *modeName(YMode m)
 {
@@ -269,6 +271,7 @@ void setup()
 {
     Serial.begin(115200);
     pinMode(ENABLE_PIN, OUTPUT);
+    pinMode(STOP_SWITCH_PIN, INPUT_PULLUP);
     digitalWrite(ENABLE_PIN, LOW);
 
     randomSeed(analogRead(A0));
@@ -288,12 +291,25 @@ void setup()
     Serial.println("XY AccelStepper non-blocking sketch started.");
     Serial.println("X = continuous rotation, Y = algorithmic movement.");
     printHelp();
-    setMode(MODE_STOP);
+    setMode(MODE_RANDOM_POINTS);
 }
 
 void loop()
 {
     uint32_t nowMs = millis();
+
+    // Emergency stop: switch to MODE_STOP when pin 12 is pressed (LOW with INPUT_PULLUP).
+    bool stopPressed = (digitalRead(STOP_SWITCH_PIN) == LOW);
+    if (stopPressed && !stopSwitchLatched)
+    {
+        setMode(MODE_STOP);
+        Serial.println("Emergency stop on pin 12 pressed.");
+        stopSwitchLatched = true;
+    }
+    else if (!stopPressed)
+    {
+        stopSwitchLatched = false;
+    }
 
     handleSerial();
 
