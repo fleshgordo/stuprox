@@ -22,7 +22,7 @@ Servo servos[SERVO_COUNT];
 
 const int startPos = 0; // Set this to any value >= 0
 const int maxPos = 90;
-const int servoStep = 1; // Degrees per step (bigger value = chunkier movement)
+const int servoStep = 1;                         // Degrees per step (bigger value = chunkier movement)
 const unsigned long servoUpdateIntervalMs = 120; // Time between steps (higher = slower)
 
 // -------------------- Stepper configuration --------------------

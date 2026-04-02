@@ -49,30 +49,26 @@
 
 // Initialize the driver(s)
 BasicStepperDriver stepper(MOTOR_STEPS, DIR_Y, STEP_Y, SLEEP);
-BasicStepperDriver stepperX(MOTOR_STEPS, DIR_X, STEP_X, SLEEP);
 
 void setup()
 {
   // Pass some config to the instances and begin
   stepper.begin(RPM, MICROSTEPS);
-  stepperX.begin(RPM, MICROSTEPS);
   // set speed profile with acceleration
   // stepper.setSpeedProfile(stepper.LINEAR_SPEED, 500, 500);
 
   // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
-  stepperX.setEnableActiveState(LOW);
+  stepper.setEnableActiveState(LOW);
 }
 
 void loop()
 {
   // energize coils
   stepper.enable();
-
   // Moving motor one full revolution using the degree notation
   stepper.rotate(-360);
 
   // pause and allow the motor to be moved by hand
   stepper.disable();
-
-  delay(2000); // repeat after 2sec. pause
+  delay(1000); // repeat after 2sec. pause
 }
