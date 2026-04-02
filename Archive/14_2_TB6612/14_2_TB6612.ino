@@ -83,6 +83,7 @@ enum SequenceState
 
 SequenceState state = ST_START_MOVE_550;
 
+// Sets DC motor direction and PWM speed (-255..255).
 void setDcMotor(int speedValue)
 {
     speedValue = constrain(speedValue, -255, 255);
@@ -105,6 +106,7 @@ void setDcMotor(int speedValue)
     }
 }
 
+// Starts DC motor using the currently selected mode.
 void startDc()
 {
     const DcMode &m = dcModes[activeMode];
@@ -119,6 +121,7 @@ void startDc()
     Serial.println(m.speed);
 }
 
+// Stops the DC motor immediately.
 void stopDc()
 {
     dcRunning = false;
@@ -126,6 +129,7 @@ void stopDc()
     Serial.println("DC stop");
 }
 
+// Updates optional DC direction toggling for crazy mode.
 void updateDc()
 {
     if (!dcRunning)
@@ -148,6 +152,7 @@ void updateDc()
     }
 }
 
+// Resets variables and starts the startup sequence from step 1.
 void startSequence()
 {
     stopDc();
@@ -162,6 +167,7 @@ void startSequence()
     Serial.println("Step 1: move +550");
 }
 
+// Prints current runtime state and counters.
 void printStatus()
 {
     Serial.print("state=");
@@ -180,6 +186,7 @@ void printStatus()
     Serial.println(upDownCyclesTarget);
 }
 
+// Prints available serial commands.
 void printHelp()
 {
     Serial.println("Commands:");
@@ -191,6 +198,7 @@ void printHelp()
     Serial.println("  help");
 }
 
+// Handles serial input commands.
 void handleSerial()
 {
     if (!Serial.available())
@@ -237,6 +245,7 @@ void handleSerial()
     }
 }
 
+// Advances the non-blocking state machine.
 void updateSequence()
 {
     if (state == ST_START_MOVE_550)
@@ -296,6 +305,7 @@ void updateSequence()
     }
 }
 
+// Initializes pins, stepper settings, serial, and starts the sequence.
 void setup()
 {
     pinMode(DC_DIR_PIN, OUTPUT);
@@ -323,6 +333,7 @@ void setup()
     startSequence();
 }
 
+// Main loop: serial, DC update, sequence update, stepper run.
 void loop()
 {
     handleSerial();
